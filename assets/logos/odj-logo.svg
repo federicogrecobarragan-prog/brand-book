@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 64" fill="none">
+  
+  <g>
+    
+    <rect x="4" y="8" width="4" height="48" fill="#d4973a" rx="2"></rect>
+    <rect x="4" y="8" width="20" height="4" fill="#d4973a" rx="2"></rect>
+    <rect x="4" y="52" width="20" height="4" fill="#d4973a" rx="2"></rect>
+    
+    <circle cx="34" cy="32" r="4" fill="#3ecf8e"></circle>
+    
+    <rect x="44" y="8" width="4" height="48" fill="#d4973a" rx="2"></rect>
+    <rect x="28" y="8" width="20" height="4" fill="#d4973a" rx="2"></rect>
+    <rect x="28" y="52" width="20" height="4" fill="#d4973a" rx="2"></rect>
+  </g>
+  
+  <text x="64" y="22" font-family="&#39;Space Grotesk&#39;, sans-serif" font-size="13" font-weight="600" letter-spacing="0.14em" fill="#5a5652" text-transform="uppercase">OFICINA DE</text>
+  <text x="63" y="50" font-family="&#39;Space Grotesk&#39;, sans-serif" font-size="26" font-weight="700" letter-spacing="-0.02em" fill="#f0ede8">Jhonson</text>
+</svg>

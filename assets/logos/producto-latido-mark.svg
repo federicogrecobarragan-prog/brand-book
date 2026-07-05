@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="LATIDO">
+  <!-- anillo de pulso -->
+  <circle cx="32" cy="32" r="26" stroke="#b89a4a" stroke-width="2" opacity=".3"/>
+  <circle cx="32" cy="32" r="26" stroke="#3ecf8e" stroke-width="2" opacity=".12"/>
+  <!-- línea de latido (ECG) -->
+  <path d="M9 33 H24 L28.5 18 L34 47 L38 28 L41 33 H55" stroke="#ecd175" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- nodo del latido -->
+  <circle cx="28.5" cy="18" r="3.6" fill="#3ecf8e"/>
+  <circle cx="28.5" cy="18" r="6.6" fill="#3ecf8e" opacity=".2"/>
+</svg>

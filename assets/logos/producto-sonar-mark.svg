@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="SONAR">
+  <defs>
+    <linearGradient id="sonarSweep" x1="32" y1="32" x2="56" y2="9" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ecd175" stop-opacity=".85"/>
+      <stop offset="1" stop-color="#ecd175" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- radar rings -->
+  <circle cx="32" cy="32" r="27" stroke="#b89a4a" stroke-width="2" opacity=".35"/>
+  <circle cx="32" cy="32" r="18.5" stroke="#b89a4a" stroke-width="2" opacity=".55"/>
+  <circle cx="32" cy="32" r="10" stroke="#b89a4a" stroke-width="2" opacity=".8"/>
+  <!-- sweep wedge -->
+  <path d="M32 32 L45.5 8.62 A27 27 0 0 1 56.46 20.58 Z" fill="url(#sonarSweep)"/>
+  <!-- leading sweep line -->
+  <line x1="32" y1="32" x2="45.5" y2="8.62" stroke="#ecd175" stroke-width="2.6" stroke-linecap="round"/>
+  <!-- detected blip -->
+  <circle cx="45.4" cy="19.9" r="3.4" fill="#3ecf8e"/>
+  <circle cx="45.4" cy="19.9" r="6.2" fill="#3ecf8e" opacity=".22"/>
+  <!-- center -->
+  <circle cx="32" cy="32" r="3" fill="#ecd175"/>
+</svg>

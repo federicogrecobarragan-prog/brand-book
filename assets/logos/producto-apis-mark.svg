@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="APIS">
+  <defs>
+    <linearGradient id="apisBody" x1="32" y1="22" x2="32" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f5e2a0"/>
+      <stop offset="1" stop-color="#caa84a"/>
+    </linearGradient>
+  </defs>
+  <!-- wings (hex outline) -->
+  <polygon points="16,20 22.93,24 22.93,32 16,36 9.07,32 9.07,24" fill="rgba(236,209,117,0.10)" stroke="#b89a4a" stroke-width="2" opacity=".85"/>
+  <polygon points="48,20 54.93,24 54.93,32 48,36 41.07,32 41.07,24" fill="rgba(236,209,117,0.10)" stroke="#b89a4a" stroke-width="2" opacity=".85"/>
+  <!-- body (hex, filled) -->
+  <polygon points="32,23 43.26,29.5 43.26,42.5 32,49 20.74,42.5 20.74,29.5" fill="url(#apisBody)" stroke="#ecd175" stroke-width="2"/>
+  <!-- body stripes -->
+  <line x1="24" y1="33.5" x2="40" y2="33.5" stroke="#0a0b0d" stroke-width="2" opacity=".55"/>
+  <line x1="25.5" y1="39.5" x2="38.5" y2="39.5" stroke="#0a0b0d" stroke-width="2" opacity=".55"/>
+  <!-- head -->
+  <circle cx="32" cy="15" r="4.6" fill="#ecd175"/>
+  <!-- antennae -->
+  <line x1="29" y1="11.5" x2="24" y2="4.5" stroke="#ecd175" stroke-width="2" stroke-linecap="round"/>
+  <line x1="35" y1="11.5" x2="40" y2="4.5" stroke="#ecd175" stroke-width="2" stroke-linecap="round"/>
+  <!-- live node (agéntico) -->
+  <circle cx="50.5" cy="16" r="3.2" fill="#3ecf8e"/>
+  <circle cx="50.5" cy="16" r="6" fill="#3ecf8e" opacity=".22"/>
+</svg>

@@ -1,0 +1,78 @@
+#!/usr/bin/env python3
+"""social_card.py — genera una tarjeta branded (imagen 1080x1080) para los posts de redes.
+HTML → render con headless browser (playwright). SIN GPU, always-on, gratis. Estilo Black Code OdJ
+(dark + ámbar). Para fotos foto-realistas usar Forge/Fooocus aparte (opcional, GPU).
+Uso: python3 social_card.py "<titular>" "<hook>" [marca] [out.png]"""
+import sys, os, html
+
+BRAND = {
+    "oficina": {"name": "OFICINA DE JHONSON", "tag": "Automatización con IA para PyMEs"},
+    "estudio": {"name": "ESTUDIO DE JHONSON", "tag": "Diseño y desarrollo con IA"},
+}
+
+
+def render_html(titular, hook, marca):
+    b = BRAND.get(marca, BRAND["oficina"])
+    # escapar pero permitir <b>...</b> para resaltar (en ámbar)
+    t = html.escape(titular).replace("&lt;b&gt;", "<b>").replace("&lt;/b&gt;", "</b>")
+    h = html.escape(hook or "")
+    return f"""<!doctype html><html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+*{{margin:0;box-sizing:border-box}}
+body{{width:1080px;height:1080px;background:radial-gradient(1200px 800px at 70% -10%, #1a1712, #0a0907 60%);font-family:'Poppins',sans-serif;color:#ece8df;overflow:hidden;position:relative}}
+.scan{{position:absolute;inset:0;background:repeating-linear-gradient(to bottom,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);pointer-events:none}}
+.glow{{position:absolute;top:-200px;right:-150px;width:600px;height:600px;background:radial-gradient(circle,rgba(245,181,10,.16),transparent 65%)}}
+.bk{{position:absolute;width:46px;height:46px;border:0 solid #f5b50a;opacity:.8}}
+.tl{{top:54px;left:54px;border-top-width:4px;border-left-width:4px}} .tr{{top:54px;right:54px;border-top-width:4px;border-right-width:4px}}
+.bl{{bottom:54px;left:54px;border-bottom-width:4px;border-left-width:4px}} .br{{bottom:54px;right:54px;border-bottom-width:4px;border-right-width:4px}}
+.wrap{{position:absolute;inset:96px;display:flex;flex-direction:column;justify-content:space-between}}
+.top{{display:flex;align-items:center;gap:16px}}
+.mark{{width:60px;height:60px;border-radius:14px;background:#1a1a1a;color:#f5b50a;font-family:Georgia,serif;font-weight:bold;font-size:34px;text-align:center;line-height:60px}}
+.brand{{font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:.22em;color:#a39d8e}}
+.titular{{font-size:64px;line-height:1.12;font-weight:800;letter-spacing:-.01em}}
+.titular b{{color:#f5b50a}}
+.hook{{font-size:28px;color:#cfc7b5;font-weight:600;line-height:1.4;margin-top:24px;max-width:880px}}
+.foot{{display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:20px;color:#6b665a}}
+.foot .url{{color:#f5b50a}}
+.tagchip{{display:inline-block;border:1px solid #3a3526;border-radius:99px;padding:8px 18px;font-size:16px;color:#a39d8e;font-family:'JetBrains Mono',monospace}}
+</style></head><body>
+<div class="scan"></div><div class="glow"></div>
+<i class="bk tl"></i><i class="bk tr"></i><i class="bk bl"></i><i class="bk br"></i>
+<div class="wrap">
+  <div class="top"><div class="mark">J</div><div class="brand">{b['name']}</div></div>
+  <div>
+    <div class="titular">{t}</div>
+    {f'<div class="hook">{h}</div>' if h else ''}
+  </div>
+  <div class="foot"><span class="tagchip">{html.escape(b['tag'])}</span><span class="url">oficinadejhonson.com</span></div>
+</div></body></html>"""
+
+
+def generate(titular, hook, marca="oficina", out=None):
+    out = out or f"/tmp/social_card_{marca}.png"
+    htmlpath = "/tmp/_social_card.html"
+    open(htmlpath, "w").write(render_html(titular, hook, marca))
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        from patchright.sync_api import sync_playwright
+    with sync_playwright() as p:
+        b = p.chromium.launch()
+        pg = b.new_page(viewport={"width": 1080, "height": 1080}, device_scale_factor=1)
+        pg.goto("file://" + htmlpath)
+        pg.wait_for_timeout(700)
+        pg.screenshot(path=out)
+        b.close()
+    return out if os.path.exists(out) else None
+
+
+if __name__ == "__main__":
+    a = sys.argv[1:]
+    if len(a) < 1:
+        print(__doc__); sys.exit(1)
+    titular = a[0]; hook = a[1] if len(a) > 1 else ""
+    marca = a[2] if len(a) > 2 else "oficina"
+    out = a[3] if len(a) > 3 else None
+    r = generate(titular, hook, marca, out)
+    print(r or "fallo")
