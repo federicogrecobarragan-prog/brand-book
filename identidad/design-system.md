@@ -1,6 +1,6 @@
-# Design System — "Black Code" · Superficie WEB / PRODUCTO (Sistema B)
+# Design System — "Black Code" · CANON ÚNICO (todo canal)
 
-> ⚠️ Este doc describe la superficie **WEB/PRODUCTO** (oficinadejhonson.com, landings, cockpit) — tokens `:root` del sitio. Para **CONTENIDO/REDES/VIDEO (HeyGen)** el canónico es `brand-identity-CANONICO.md` (Sistema A, ámbar `#f5b50a`, Poppins). Los 2 sistemas divergen — ver `00-RECONCILIACION-decision.md`. NO usar estos tokens para configurar HeyGen.
+> ✅ **Este es el sistema canónico de la marca** (decisión Federico 05/07: unificar todo al estilo LOGO+WEB). Aplica a web, redes, video HeyGen y docs. Ámbar Oficina `#ecd175` · celeste Estudio/Sofía `#5b9cf6` · verde señal `#3ecf8e`. Fuentes: Space Grotesk + Plus Jakarta + JetBrains Mono. Ver `00-RECONCILIACION-decision.md`. El `brand-identity-CANONICO.md` (v1) queda como historial — sus valores viejos (`#f5b50a`/Poppins) están superseded por este doc.
 
 ## Paleta (tokens canónicos)
 

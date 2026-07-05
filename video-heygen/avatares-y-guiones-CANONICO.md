@@ -7,6 +7,12 @@
 
 ---
 
+> 🔴 **COLORES ACTUALIZADOS 05/07/2026 (decisión Federico):** ámbar Oficina **`#ecd175`** (era #f5b50a) ·
+> Estudio/Sofía **celeste/azul `#5b9cf6`** (era cian #22d3ee / teal #2dd4bf) · fondo negro `#09090a` ·
+> display **Space Grotesk** (era Poppins). Verde `#3ecf8e` = señal viva. Ver `../identidad/00-RECONCILIACION-decision.md`.
+> Voces HeyGen: **Jhonson.V1/V2/V3** (avatar de Federico) · **Sofi.V1/V2/V3** (avatar Sofía). Lo demás del doc (estructura, guiones) vigente.
+
+
 ## 1. Principios (heredados del Brand Book)
 - Fondo carbón oscuro · una fuente de luz del acento de marca · espacio negativo · premium, no "stock".
 - Tipografía en pantalla: **Poppins** (títulos/subtítulos) + **JetBrains Mono** (datos/tags).

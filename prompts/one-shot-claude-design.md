@@ -1,8 +1,8 @@
 # ONE-SHOT PROMPT → Claude Design
 
 > Pegar TODO este bloque en Claude Design. Genera el sistema gráfico completo de la marca en una
-> sola pasada, alineado al brand book v1 ("Black Code" — sistema de CONTENIDO/VIDEO, no el de la web).
-> Federico dispara esto. Valores exactos de `identidad/brand-identity-CANONICO.md`.
+> sola pasada, alineado al CANON ÚNICO de marca (Black Code, estilo LOGO+WEB — decisión Federico 05/07).
+> Federico dispara esto. Valores exactos de `identidad/design-system.md` + `00-RECONCILIACION-decision.md`.
 
 ---
 
@@ -17,15 +17,15 @@ existe — se llama **"Black Code"**. NO la reinventes: construí sobre ella con
 **3 palabras guía:** Vanguardia · Cercanía · Precisión. Sensación: premium pero del lado del que arranca.
 
 **Familia de 2 marcas (misma base, distinto acento — NUNCA se mezclan):**
-- **Oficina de Jhonson** → acento **ámbar/oro `#f5b50a`** (+ profundo `#c98a00`). Foco: automatización con IA. Imaginario: redes de nodos, engranajes de luz, flujos de datos, agentes trabajando.
-- **Estudio de Jhonson** → acento **cian eléctrico `#22d3ee`** (+ índigo `#3b3bff`). Foco: diseño/desarrollo/innovación con IA. Imaginario: wireframes que cobran vida, capas de UI, pixel-perfect.
-- **Sofía educativa** (contenido de aprendizaje/tendencias) → acento **teal-menta `#2dd4bf`** (familia fría, lectura "academia").
+- **Oficina de Jhonson** → acento **ámbar `#ecd175`** (+ claro `#f5e2a0`, oscuro `#b89a4a`). Foco: automatización con IA. Imaginario: redes de nodos, engranajes de luz, flujos de datos, agentes trabajando.
+- **Estudio de Jhonson** → acento **celeste/azul `#5b9cf6`**. Foco: diseño/desarrollo/innovación con IA. Imaginario: wireframes que cobran vida, capas de UI, pixel-perfect.
+- **Sofía educativa** (contenido de aprendizaje/tendencias) → usa el mismo celeste `#5b9cf6` (variante clara para contexto educativo).
 
-**Base común:** fondo carbón con degradé radial cálido `#0a0907` → `#1a1712`. **Regla 80/20:** ~80% oscuro/neutro, ~20% acento (el acento ilumina, no satura; una sola fuente de luz dominante).
+**Base común:** fondo negro `#09090a` / superficie `#111113`. **Regla 80/20:** ~80% oscuro/neutro, ~20% acento (el acento ilumina, no satura; una sola fuente de luz dominante).
 
-**Neutros de texto:** marfil `#ece8df` (titulares) · gris cálido `#a39d8e` (secundario) · `#6b665a` (terciario). Nunca blanco puro.
+**Neutros de texto:** blanco cálido `#f0ede8` (titulares) · `#9b9591` (secundario) · `#5a5652` (terciario). Nunca blanco puro. **Verde `#3ecf8e`** = señal de "sistema vivo/OK" (compartido, no acento de sub-marca).
 
-**Tipografía:** **Poppins** (700-900, display/titulares) + **JetBrains Mono** (500-700, tags/datos/footers, letter-spacing .18-.22em). Jerarquía marcada + mucho espacio negativo.
+**Tipografía:** **Space Grotesk** (display/titulares) + **Plus Jakarta Sans** (cuerpo/UI) + **JetBrains Mono** (tags/datos/footers, letter-spacing .16-.22em). Jerarquía marcada + mucho espacio negativo.
 
 **6 motivos gráficos (carné de identidad):** (1) monograma **J** en recuadro redondeado; (2) **corchetes `[ ]`** en las 4 esquinas; (3) retícula técnica tenue de fondo; (4) scanline/grano sutil; (5) glow/halo del acento detrás del foco; (6) diagonal de luz en piezas comerciales.
 
@@ -33,14 +33,14 @@ existe — se llama **"Black Code"**. NO la reinventes: construí sobre ella con
 
 ## Entregables (generá TODOS, coherentes entre sí)
 
-1. **Brand board** (1 lámina): paletas de las 2 marcas + Sofía (hex), escalas Poppins/Mono, uso de logo, regla 80/20, do/don't.
-2. **Sistema de logo:** monograma J + wordmark **Oficina de Jhonson** (ámbar) y **Estudio de Jhonson** (cian) + versiones (color/mono/favicon, sobre claro y oscuro) + área de resguardo. (Referencia: hay un `logo.svg` OdJ con corchetes ámbar + nodo verde — evolucionalo, no lo contradigas.)
+1. **Brand board** (1 lámina): paletas de las 2 marcas + Sofía (hex), escalas Space Grotesk/Jakarta/Mono, uso de logo, regla 80/20, do/don't.
+2. **Sistema de logo:** monograma J + wordmark **Oficina de Jhonson** (ámbar) y **Estudio de Jhonson** (celeste) + versiones (color/mono/favicon, sobre claro y oscuro) + área de resguardo. (Referencia: hay un `logo.svg` OdJ con corchetes ámbar + nodo verde #3ecf8e — evolucionalo, no lo contradigas.)
 3. **Elementos gráficos:** el set de los 6 motivos como piezas sueltas reutilizables (corchetes, grid, scanline, glow, diagonal, monograma).
-4. **Plantillas de redes** (con grilla + slots de texto): post 1:1, story/reel 9:16, cover LinkedIn, cover FB, banner web — en variante Oficina (ámbar) y Estudio (cian), y variante "cita/dato" vs "producto".
+4. **Plantillas de redes** (con grilla + slots de texto): post 1:1, story/reel 9:16, cover LinkedIn, cover FB, banner web — en variante Oficina (ámbar) y Estudio (celeste), y variante "cita/dato" vs "producto".
 5. **Kit de VIDEO para HeyGen** (crítico) en 9:16 (y 1:1 + 16:9):
-   - **Fondo/escena** carbón con halo de acento (ámbar para Jhonson, cian para Sofía-Estudio, teal para Sofía-educativa).
-   - **Lower-third:** nombre + rol en Poppins + línea mono con el acento (ej. `JHONSON · Oficina de Jhonson`). **Intro bumper** (monograma J + glow, 1-1.5s) y **outro** (CTA + `oficinadejhonson.com` + redes, monograma J).
-   - **Estilo de subtítulos** de marca (Poppins bold, keyword en color de acento) — siempre on.
+   - **Fondo/escena** carbón con halo de acento (ámbar para Jhonson, celeste para Sofía-Estudio/educativa).
+   - **Lower-third:** nombre + rol en Space Grotesk + línea mono con el acento (ej. `JHONSON · Oficina de Jhonson`). **Intro bumper** (monograma J + glow, 1-1.5s) y **outro** (CTA + `oficinadejhonson.com` + redes, monograma J).
+   - **Estilo de subtítulos** de marca (Space Grotesk bold, keyword en color de acento) — siempre on.
 6. **Bloque de imagen (para gpt-image-2)** validado: fondo carbón + una luz volumétrica del acento + motivos por marca + espacio negativo + 4k, SIN texto/caras. (Ya existe una plantilla — refinala.)
 7. **Tokens exportables:** paletas + tipos como lista de variables, lista para pegar en el brand kit de HeyGen y en CSS.
 

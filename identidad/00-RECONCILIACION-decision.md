@@ -1,35 +1,39 @@
-# ⚠️ RECONCILIACIÓN DE IDENTIDAD — decisión pendiente de Federico
+# ✅ RECONCILIACIÓN DE IDENTIDAD — RESUELTA (05/07/2026, decisión Federico)
 
-> El ecosistema evolucionó en 2 frentes que hoy **NO usan los mismos valores de marca**. Antes de
-> configurar HeyGen (o cualquier canal nuevo), hay que decidir si se **unifican** o se **documentan
-> como superficies distintas**. Esto NO bloquea HeyGen (el sistema de video/contenido es claro), pero
-> es la deuda de marca #1. **Es tu decisión — no la tomé solo.**
+> Había 2 sistemas divergentes (contenido vs web). **Decisión de Federico: unificar TODO al estilo del
+> LOGO + WEB.** Este doc pasa de "decisión pendiente" a **canon único**. Todo canal (web, redes, video
+> HeyGen, docs) usa de acá en adelante estos valores.
 
-## Los 2 sistemas que coexisten hoy
+## SISTEMA ÚNICO DE MARCA (canónico)
 
-| Dimensión | **A) Contenido / Marketing / Video** (redes, gpt-image, HeyGen) | **B) Web / Producto** (oficinadejhonson.com, landings, cockpit) |
+| Elemento | Valor | Notas |
 |---|---|---|
-| Fuente de verdad | `identidad/brand-identity-CANONICO.md` (v1 30/06) | tokens `:root` del sitio + `design-system.md` |
-| Fondo | carbón cálido `#0a0907`→`#1a1712` | negro frío `#09090a` / `#111113` |
-| **Ámbar** | **`#f5b50a`** (dorado encendido) | **`#ecd175`** (dorado pálido) — y el logo/handoff usa **`#d4973a`** |
-| Marca #2 | **cian `#22d3ee`** (Estudio) + **teal `#2dd4bf`** (Sofía educativa) | **verde `#3ecf8e`** (señal de vida/OK) |
-| Display | **Poppins** (700-900) | **Space Grotesk** |
-| Cuerpo/UI | — | Plus Jakarta Sans |
-| Mono | JetBrains Mono ✅ (coincide) | JetBrains Mono ✅ (coincide) |
-| Texto | marfil `#ece8df` | blanco cálido `#f0ede8` (≈ coincide) |
+| Fondo base | `#09090a` · superficie `#111113` · elevada `#1a1a1d` | negro (estilo web) |
+| Bordes | `#252529` / `#32323a` | |
+| **Ámbar — Oficina de Jhonson** | **`#ecd175`** (claro `#f5e2a0`, oscuro `#b89a4a`, glow `rgba(236,209,117,.18)`) | acento héroe de la marca madre |
+| **Celeste/Azul — Estudio de Jhonson / Sofía** | **`#5b9cf6`** (el `--blue` de la web) | sub-marca; "más presencia de celeste/azul" |
+| **Verde — señal viva** | `#3ecf8e` | del logo; estados OK / "IA activa" / blip. Compartido, no es acento de sub-marca |
+| Texto | `#f0ede8` (principal) · `#9b9591` · `#5a5652` | blanco cálido, nunca `#fff` |
+| **Display** | **Space Grotesk** | (antes Poppins — unificado a la web) |
+| **Cuerpo/UI** | **Plus Jakarta Sans** | |
+| **Mono** | **JetBrains Mono** | tags/labels/datos |
 
-**Divergencias duras:** 3 ámbares (`#f5b50a` / `#ecd175` / `#d4973a`) · Poppins vs Space Grotesk · el "acento vivo" es verde en web pero cian/teal en contenido.
+## Qué cambió respecto al brand book v1 (30/06)
 
-## Opciones
+- Ámbar `#f5b50a` → **`#ecd175`** (y se retira `#d4973a` del logo viejo).
+- Estudio cian `#22d3ee` + Sofía teal `#2dd4bf` → **`#5b9cf6` celeste/azul** (una sola familia fría para Estudio/Sofía).
+- Display Poppins → **Space Grotesk**.
+- Fondo carbón cálido `#0a0907` → **negro web `#09090a`**.
 
-- **Opción 1 — Unificar (recomendada a mediano plazo):** elegir UN ámbar, UNA display, y un rol único para verde/cian. Requiere re-tokenizar la web O regenerar los assets de contenido. Más trabajo, marca 100% coherente en todo canal.
-- **Opción 2 — Dos superficies formales (rápida):** documentar que "Contenido/Video" (cálido, `#f5b50a`, Poppins) y "Web/Producto UI" (frío, `#ecd175`, Grotesk) son **superficies deliberadamente distintas** de la misma familia Black Code. Aceptable si se asume a propósito. Riesgo: se siente "dos marcas parecidas".
+## Regla de acentos (no se mezclan)
 
-## Para HeyGen (no espera esta decisión)
+- **Oficina** = ámbar `#ecd175`. **Estudio/Sofía** = celeste `#5b9cf6`. Verde `#3ecf8e` = señal viva (ambas pueden usarlo como "vida del sistema", NO como acento de marca).
 
-El video/avatar usa el **sistema A (Contenido)** — ya está 100% especificado en
-`video-heygen/avatares-y-guiones-CANONICO.md`: **ámbar `#f5b50a`** (Jhonson/Oficina), **cian `#22d3ee`**
-(Sofía/Estudio), **teal `#2dd4bf`** (Sofía educativa), **Poppins** en overlays, monograma J intro/outro.
-La config de HeyGen se hace con ESTOS valores. Si más tarde se unifica (Opción 1), se re-ajusta el brand kit.
+## ⚠️ Propagación downstream pendiente (BAKUGO, follow-on)
 
-> **ACCIÓN FEDERICO:** elegir Opción 1 o 2. Mientras tanto, todo lo de HeyGen/redes = sistema A.
+Los docs/scripts que aún usan los valores viejos (`#f5b50a`, Poppins) deben migrarse a este canon:
+`docs/marketing/brand_identity.md`, `video_avatares_guiones.md`, y los scripts del motor social
+(`social_card.py`, `tokio_post_image.py` bloques STYLE, `social_rotator.py`). Tarea aparte — el
+brand-book (este repo) ya es la fuente de verdad nueva.
+
+> Nota: si "celeste/azul" querías un hex distinto (ej. cian `#22d3ee`), avisá y se ajusta este único valor.
