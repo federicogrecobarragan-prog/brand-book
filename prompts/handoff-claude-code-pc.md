@@ -13,8 +13,22 @@
 2. **Decisión de reconciliación** tomada (`identidad/00-RECONCILIACION-decision.md`). Canon único (LOGO+WEB): ámbar Oficina `#ecd175`, celeste Estudio/Sofía `#5b9cf6`, verde señal `#3ecf8e`, fonts Space Grotesk + Plus Jakarta + JetBrains Mono.
 3. **Voces ya definidas en HeyGen** (ver §2): Jhonson.V1/V2/V3 (avatar Federico) · Sofi.V1/V2/V3 (avatar Sofía).
 4. **Cuenta HeyGen** logueada en el browser de Federico (sesión propia; el agente NO maneja la password).
-5. Clonar el brand book para tener la fuente de verdad a mano:
-   `git clone <repo brand-book>` → leer `identidad/brand-identity-CANONICO.md` + `video-heygen/avatares-y-guiones-CANONICO.md`.
+5. Clonar el brand book (tiene los assets + la fuente de verdad):
+   `git clone https://github.com/federicogrecobarragan-prog/brand-book.git`
+   Leer: `identidad/design-system.md` (canon) · `identidad/00-RECONCILIACION-decision.md` · `video-heygen/avatares-y-guiones-CANONICO.md` (guiones/checklist).
+
+## Assets ya generados (en el repo — usar EXACTO, no re-crear)
+
+| Asset | Path en el repo |
+|---|---|
+| **Logo Oficina** (ámbar sólido) | `assets/logos/oficina-mark.svg` · `.png` · `oficina-mark-white.svg/png` (mono) · `favicon-oficina.png` |
+| **Logo Estudio** (celeste sólido) | `assets/logos/estudio-mark.svg` · `.png` · `estudio-mark-white.svg/png` (mono) |
+| **Tipografías** (woff2) | `assets/tipografia/` — grotesk-*, jakarta-*, jetmono-* |
+| **Brand board / láminas** (color, tipo, tokens, do-dont, reglas) | `assets/referencias/brand-board/00..17-*.png` |
+| **Kit de video HeyGen** (fondos, lower-third, intro/outro, escenas 9:16-1:1-16:9) | `assets/referencias/brand-board/13-video-escenas.png`, `14-video-lower-third.png`, `15-video-intro-outro.png` |
+| Tokens exportables (paleta/tipos) | láminas `03-color.png` + `09-tokens.png` |
+
+> Los logos y el kit de video son **on-canon** (ámbar `#ecd175` Oficina / celeste `#5b9cf6` Estudio, sin arcoíris). Usalos tal cual para el brand kit y las escenas de HeyGen.
 
 ## Qué configurar en HeyGen (checklist ejecutable)
 
