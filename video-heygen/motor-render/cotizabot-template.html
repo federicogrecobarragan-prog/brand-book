@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:'Space Grotesk'; font-weight:700; src:url(data:font/woff2;base64,__G700__) format('woff2'); }
+  @font-face { font-family:'Space Grotesk'; font-weight:500; src:url(data:font/woff2;base64,__G500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:500; src:url(data:font/woff2;base64,__M500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:400; src:url(data:font/woff2;base64,__M400__) format('woff2'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; background:#09090a; overflow:hidden; }
+  #stage {
+    position:relative; width:1080px; height:1920px;
+    background: radial-gradient(ellipse 130% 80% at 50% 44%, #131315 0%, #09090a 65%);
+    font-family:'Space Grotesk', sans-serif;
+  }
+  .particle { position:absolute; border-radius:50%; background:#ecd175; opacity:0; will-change:transform,opacity; }
+  #eyebrow {
+    position:absolute; top:7.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:500; font-size:24px;
+    letter-spacing:.30em; text-indent:.30em; color:#b89a4a; opacity:0;
+  }
+  #eyebrow .dot { display:inline-block; width:10px; height:10px; border-radius:50%;
+    background:#3ecf8e; margin-right:16px; vertical-align:middle; box-shadow:0 0 14px rgba(62,207,142,.9); }
+  #urlbar {
+    position:absolute; bottom:6.2%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:400; font-size:26px;
+    letter-spacing:.05em; color:#5a5652; opacity:0;
+  }
+  .scene { position:absolute; inset:0; opacity:0; will-change:opacity, transform; }
+
+  /* ===== A : presupuesto que se enfría ===== */
+  #a-title {
+    position:absolute; top:19.5%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:64px; line-height:1.18; letter-spacing:-1px; color:#f0ede8;
+  }
+  #a-title .em { color:#ecd175; }
+  #a-card {
+    position:absolute; left:50%; top:37.5%; transform:translateX(-50%);
+    width:740px; border-radius:24px; background:#111113; border:1px solid #252529;
+    padding:40px 44px;
+  }
+  .cardTop { display:flex; justify-content:space-between; align-items:center; margin-bottom:24px; }
+  .cardLbl { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; letter-spacing:.22em; color:#b89a4a; }
+  .cardTime { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; color:#5a5652; letter-spacing:.1em; }
+  .cardName { font-weight:700; font-size:48px; color:#f0ede8; margin-bottom:8px; }
+  .cardSub { font-weight:500; font-size:28px; color:#9b9591; }
+  #a-status {
+    margin-top:26px; display:inline-block;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:22px; letter-spacing:.14em;
+    color:#8a8580; border:1px solid #32323a; border-radius:999px; padding:14px 26px;
+  }
+  #a-status .d { color:#ecd175; }
+  #a-stamp {
+    position:absolute; top:59%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:34px;
+    letter-spacing:.34em; text-indent:.34em; color:#6b7f99;
+    opacity:0; transform:scale(1.25); will-change:opacity, transform;
+  }
+
+  /* ===== B : cotización al instante ===== */
+  #b-title {
+    position:absolute; top:18.5%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:62px; line-height:1.18; letter-spacing:-1px; color:#f0ede8;
+  }
+  #b-title .em { color:#ecd175; }
+  #b-doc {
+    position:absolute; left:50%; top:31%; transform:translateX(-50%);
+    width:760px; border-radius:24px; background:#111113; border:1px solid #252529;
+    padding:40px 44px;
+    opacity:0; will-change:opacity, transform;
+  }
+  #b-doc .head { display:flex; justify-content:space-between; margin-bottom:26px; }
+  #b-doc .hl { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; letter-spacing:.2em; color:#b89a4a; }
+  .item {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:17px 0; border-bottom:1px solid #1e1e22;
+    opacity:0; transform:translateX(-30px); will-change:opacity, transform;
+  }
+  .item .n { font-weight:500; font-size:27px; color:#d8d3ce; }
+  .item .v { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:25px; color:#9b9591; }
+  #totalRow {
+    display:flex; justify-content:space-between; align-items:center;
+    padding-top:24px; margin-top:6px;
+    opacity:0; will-change:opacity, transform; transform:translateY(14px);
+  }
+  #totalRow .n { font-weight:700; font-size:32px; color:#f0ede8; letter-spacing:.02em; }
+  #totalRow .v { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:34px; color:#ecd175; }
+  #sendBtn {
+    position:absolute; left:50%; top:66.5%; transform:translate(-50%,0) scale(.7);
+    font-weight:700; font-size:34px; letter-spacing:.05em; color:#111113;
+    background:linear-gradient(180deg,#f5e2a0,#ecd175); border-radius:999px;
+    padding:24px 60px; white-space:nowrap;
+    box-shadow:0 0 55px rgba(236,209,117,.4);
+    opacity:0; will-change:opacity, transform;
+  }
+  #sendBtn .zap { display:inline-block; margin-right:14px; }
+
+  /* ===== C : seguimiento solo ===== */
+  #c-title {
+    position:absolute; top:21%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:64px; letter-spacing:-1px; color:#f0ede8;
+  }
+  #c-title .em { color:#ecd175; }
+  #timeline { position:absolute; left:50%; top:35%; transform:translateX(-50%); width:700px; }
+  .tl {
+    display:flex; align-items:center; gap:28px; margin-bottom:34px;
+    opacity:0; transform:translateY(26px); will-change:opacity, transform;
+  }
+  .tl .ico {
+    width:84px; height:84px; border-radius:50%; flex-shrink:0;
+    background:#141416; border:2px solid #32323a;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .tl.on .ico { border-color:#3ecf8e; background:rgba(62,207,142,.08); }
+  .tl .txt { flex:1; }
+  .tl .h { font-weight:700; font-size:34px; color:#f0ede8; }
+  .tl .s { font-family:'JetBrains Mono',monospace; font-weight:400; font-size:21px; color:#6d6862; margin-top:5px; letter-spacing:.06em; }
+  .tl .when { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; color:#b89a4a; flex-shrink:0; letter-spacing:.1em; }
+  #c-sub {
+    position:absolute; top:66%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:26px;
+    letter-spacing:.2em; text-indent:.2em; color:#3ecf8e;
+    opacity:0; will-change:opacity;
+  }
+
+  /* ===== D : CTA ===== */
+  #d-title {
+    position:absolute; top:26%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:96px; letter-spacing:-2px; line-height:1.1;
+    color:#f0ede8;
+    opacity:0; transform:scale(.8); will-change:opacity, transform;
+  }
+  #d-title .em { color:#ecd175; text-shadow:0 0 80px rgba(236,209,117,.45); }
+  #d-sub {
+    position:absolute; top:40.5%; left:0; right:0; text-align:center;
+    font-weight:500; font-size:36px; color:#9b9591;
+    opacity:0; transform:translateY(16px); will-change:opacity, transform;
+  }
+  #d-mark {
+    position:absolute; left:50%; top:50%; transform:translateX(-50%) scale(.8);
+    width:190px; height:190px; opacity:0; will-change:opacity, transform;
+    filter:drop-shadow(0 0 50px rgba(236,209,117,.35));
+  }
+  #d-name {
+    position:absolute; top:63.5%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:56px; color:#f0ede8; letter-spacing:-.5px;
+    opacity:0; transform:translateY(18px); will-change:opacity, transform;
+  }
+  #d-name .em { color:#ecd175; }
+  #d-cta {
+    position:absolute; top:71.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:27px;
+    letter-spacing:.14em; text-indent:.14em; color:#3ecf8e;
+    opacity:0; transform:translateY(14px); will-change:opacity, transform;
+  }
+  #dPulse {
+    position:absolute; left:50%; top:50%; margin-top:95px;
+    width:190px; height:190px; border:3px solid #3ecf8e; border-radius:50%;
+    transform:translate(-50%,-50%) scale(.95); opacity:0; will-change:transform, opacity;
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="particles"></div>
+  <div id="eyebrow"><span class="dot"></span>COTIZABOT &centerdot; OFICINA DE JHONSON</div>
+
+  <!-- A -->
+  <div class="scene" id="sceneA">
+    <div id="a-title">&iquest;Cu&aacute;ntos presupuestos<br>se te <span class="em">enfr&iacute;an</span>?</div>
+    <div id="a-card">
+      <div class="cardTop"><span class="cardLbl">PRESUPUESTO</span><span class="cardTime">N&deg; 0341</span></div>
+      <div class="cardName">Cliente Rodr&iacute;guez</div>
+      <div class="cardSub">Pedido el lunes &centerdot; sigue esperando</div>
+      <div id="a-status">SIN RESPUESTA &centerdot; <span class="d" id="days">2</span> D&Iacute;AS</div>
+    </div>
+    <div id="a-stamp">SE ENFRI&Oacute;</div>
+  </div>
+
+  <!-- B -->
+  <div class="scene" id="sceneB">
+    <div id="b-title">CotizaBot lo arma<br><span class="em">al instante</span>.</div>
+    <div id="b-doc">
+      <div class="head"><span class="hl">COTIZACI&Oacute;N &centerdot; N&deg; 0342</span><span class="hl">HOY</span></div>
+      <div class="item" id="i1"><span class="n">Servicio principal</span><span class="v">&#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</span></div>
+      <div class="item" id="i2"><span class="n">Materiales</span><span class="v">&#9679;&#9679;&#9679;&#9679;</span></div>
+      <div class="item" id="i3"><span class="n">Mano de obra</span><span class="v">&#9679;&#9679;&#9679;&#9679;&#9679;</span></div>
+      <div class="item" id="i4"><span class="n">Plazo de entrega</span><span class="v">7 d&iacute;as</span></div>
+      <div id="totalRow"><span class="n">TOTAL</span><span class="v">$ &#9679;&#9679;&#9679;&#9679;&#9679;&#9679;</span></div>
+    </div>
+    <div id="sendBtn"><span class="zap">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="#111113" style="vertical-align:-4px"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+    </span>ENVIADO AL CLIENTE</div>
+  </div>
+
+  <!-- C -->
+  <div class="scene" id="sceneC">
+    <div id="c-title">Y hace el <span class="em">seguimiento</span> solo.</div>
+    <div id="timeline">
+      <div class="tl on" id="t1">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.4" stroke-linecap="round"><path d="M4 12.5l5 5L20 6.5"/></svg>
+        </div>
+        <div class="txt"><div class="h">Cotizaci&oacute;n enviada</div><div class="s">EMAIL + WHATSAPP</div></div>
+        <div class="when">HOY</div>
+      </div>
+      <div class="tl on" id="t2">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        </div>
+        <div class="txt"><div class="h">Recordatorio autom&aacute;tico</div><div class="s">SI NO HAY RESPUESTA</div></div>
+        <div class="when">+48 HS</div>
+      </div>
+      <div class="tl on" id="t3">
+        <div class="ico">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 20.5l1.6-4.8A8.4 8.4 0 0 1 3.6 11 8.5 8.5 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>
+        </div>
+        <div class="txt"><div class="h">El cliente respondi&oacute;</div><div class="s">TE AVISA AL TOQUE</div></div>
+        <div class="when">&#10003;</div>
+      </div>
+    </div>
+    <div id="c-sub">&centerdot; VOS CERR&Aacute;S LA VENTA &centerdot;</div>
+  </div>
+
+  <!-- D -->
+  <div class="scene" id="sceneD">
+    <div id="d-title">Aceler&aacute;<br>tus <span class="em">ventas</span>.</div>
+    <div id="d-sub">Probalo antes de contratar. Sin costo.</div>
+    <div id="dPulse"></div>
+    <div id="d-mark">
+      <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="114" fill="none" stroke="#ecd175" stroke-width="12"/>
+        <circle cx="120" cy="120" r="108" fill="#141416"/>
+        <rect x="70" y="88" width="9" height="64" rx="4.5" fill="#ecd175"/>
+        <rect x="84" y="88" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <rect x="84" y="143" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <rect x="161" y="88" width="9" height="64" rx="4.5" fill="#ecd175"/>
+        <rect x="132" y="88" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <rect x="132" y="143" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <circle cx="120" cy="120" r="17" fill="#3ecf8e"/>
+      </svg>
+    </div>
+    <div id="d-name">Cotiza<span class="em">Bot</span></div>
+    <div id="d-cta">PEDILO EN OFICINADEJHONSON.COM</div>
+  </div>
+
+  <div id="urlbar">oficinadejhonson.com</div>
+</div>
+
+<script>
+  const outCubic = x => 1 - Math.pow(1-x,3);
+  const outQuint = x => 1 - Math.pow(1-x,5);
+  const inOutCubic = x => x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2;
+  const outBack = x => { const c1=1.5,c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const seg = (t,a,b) => clamp01((t-a)/(b-a));
+  const $ = id => document.getElementById(id);
+  const win = (t,a,b,f=.4) => Math.min(seg(t,a,a+f), 1-seg(t,b-f,b));
+
+  function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+  const rng = mulberry32(19);
+  const amb = [];
+  for(let i=0;i<18;i++){
+    const el=document.createElement('div'); el.className='particle';
+    const s=3+rng()*5; el.style.width=s+'px'; el.style.height=s+'px';
+    if(rng()>.6) el.style.filter='blur(2px)';
+    $('particles').appendChild(el);
+    amb.push({el,x:60+rng()*960,y:500+rng()*1400,sp:20+rng()*40,sw:14+rng()*28,ph:rng()*6.28,op:.08+rng()*.18});
+  }
+
+  const D = 15.5;
+
+  window.seek = function(t){
+    $('eyebrow').style.opacity = (0.95*Math.min(seg(t,.15,.75), 1-seg(t,D-0.6,D))).toFixed(3);
+    $('urlbar').style.opacity  = (0.9 *Math.min(seg(t,.35,1.0), 1-seg(t,D-0.6,D))).toFixed(3);
+
+    amb.forEach(p=>{
+      const y=p.y-p.sp*t, x=p.x+Math.sin(t*.8+p.ph)*p.sw;
+      const env=seg(t,.2,1.1)*(1-seg(t,D-0.8,D));
+      p.el.style.transform=`translate(${x}px,${y}px)`;
+      p.el.style.opacity=(p.op*env*(.7+.3*Math.sin(t*2+p.ph*3))).toFixed(3);
+    });
+
+    // ---------- A : 0 → 4.4 ----------
+    {
+      const w = win(t, 0, 4.4, .45);
+      $('sceneA').style.opacity = w.toFixed(3);
+      $('sceneA').style.transform = `scale(${1 - .03*seg(t,3.8,4.4)})`;
+
+      const ce = outQuint(seg(t,.35,1.05));
+      $('a-card').style.opacity = ce.toFixed(3);
+      $('a-card').style.transform = `translateX(-50%) translateY(${34*(1-ce)}px)`;
+
+      // contador de días sube: 2 → 6
+      const days = 2 + Math.round(4 * seg(t, 1.4, 2.6));
+      $('days').textContent = days;
+
+      // la tarjeta se enfría (vira a azul frío + oscurece)
+      const cold = seg(t, 2.2, 3.2);
+      $('a-card').style.filter = `grayscale(${0.5*cold}) brightness(${1-0.35*cold}) hue-rotate(${-18*cold}deg) saturate(${1-0.3*cold})`;
+
+      const st = seg(t,2.9,3.35);
+      $('a-stamp').style.opacity = st.toFixed(3);
+      $('a-stamp').style.transform = `scale(${1.25 - .25*outBack(st)})`;
+    }
+
+    // ---------- B : 4.2 → 9.6 ----------
+    {
+      const w = win(t, 4.2, 9.6, .45);
+      $('sceneB').style.opacity = w.toFixed(3);
+      $('sceneB').style.transform = `scale(${.985 + .015*seg(t,4.2,5.6)})`;
+
+      const dp = seg(t,4.7,5.4);
+      $('b-doc').style.opacity = clamp01(dp*1.7).toFixed(3);
+      $('b-doc').style.transform = `translateX(-50%) translateY(${34*(1-outQuint(dp))}px)`;
+
+      ['i1','i2','i3','i4'].forEach((id,i)=>{
+        const p = seg(t, 5.35 + i*0.38, 5.80 + i*0.38);
+        $(id).style.opacity = p.toFixed(3);
+        $(id).style.transform = `translateX(${-30*(1-outBack(p))}px)`;
+      });
+      const tr = seg(t, 6.95, 7.40);
+      $('totalRow').style.opacity = tr.toFixed(3);
+      $('totalRow').style.transform = `translateY(${14*(1-outCubic(tr))}px)`;
+
+      const sb = seg(t, 7.55, 8.10);
+      const beat = t>8.1 ? 1+.02*Math.sin((t-8.1)*3*Math.PI) : 1;
+      $('sendBtn').style.opacity = clamp01(sb*2).toFixed(3);
+      $('sendBtn').style.transform = `translate(-50%,0) scale(${(.7+.3*outBack(sb))*beat})`;
+    }
+
+    // ---------- C : 9.4 → 12.6 ----------
+    {
+      const w = win(t, 9.4, 12.6, .42);
+      $('sceneC').style.opacity = w.toFixed(3);
+
+      const ti = outCubic(seg(t,9.65,10.15));
+      $('c-title').style.opacity = ti.toFixed(3);
+      $('c-title').style.transform = `translateY(${26*(1-ti)}px)`;
+
+      ['t1','t2','t3'].forEach((id,i)=>{
+        const p = seg(t, 9.95+i*.5, 10.5+i*.5);
+        $(id).style.opacity = p.toFixed(3);
+        $(id).style.transform = `translateY(${26*(1-outBack(p))}px)`;
+      });
+
+      const cs = outCubic(seg(t,11.6,12.0));
+      $('c-sub').style.opacity = (.9*cs).toFixed(3);
+    }
+
+    // ---------- D : 12.4 → 15.5 ----------
+    {
+      $('sceneD').style.opacity = Math.min(seg(t,12.4,12.85),1).toFixed(3);
+      $('sceneD').style.transform = `scale(${1 + .02*seg(t,12.8,D)})`;
+
+      const np = seg(t,12.6,13.25);
+      $('d-title').style.opacity = clamp01(np*2).toFixed(3);
+      $('d-title').style.transform = `scale(${.8+.2*outBack(np)})`;
+
+      const sp = outCubic(seg(t,13.15,13.6));
+      $('d-sub').style.opacity = (.95*sp).toFixed(3);
+      $('d-sub').style.transform = `translateY(${16*(1-sp)}px)`;
+
+      const mp = seg(t,13.4,13.95);
+      $('d-mark').style.opacity = clamp01(mp*2).toFixed(3);
+      $('d-mark').style.transform = `translateX(-50%) scale(${.8+.2*outBack(mp)})`;
+
+      const pu = seg(t,13.9,14.75);
+      $('dPulse').style.opacity = pu===0?0:(.38*(1-pu)).toFixed(3);
+      $('dPulse').style.transform = `translate(-50%,-50%) scale(${.95+.55*outCubic(pu)})`;
+
+      const nm = outCubic(seg(t,13.75,14.2));
+      $('d-name').style.opacity = nm.toFixed(3);
+      $('d-name').style.transform = `translateY(${18*(1-nm)}px)`;
+
+      const ct = outCubic(seg(t,14.1,14.55));
+      $('d-cta').style.opacity = ct.toFixed(3);
+      $('d-cta').style.transform = `translateY(${14*(1-ct)}px)`;
+    }
+  };
+  window.seek(0);
+</script>
+</body>
+</html>
