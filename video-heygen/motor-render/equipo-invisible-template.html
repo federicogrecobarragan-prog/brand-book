@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:'Space Grotesk'; font-weight:700; src:url(data:font/woff2;base64,__G700__) format('woff2'); }
+  @font-face { font-family:'Space Grotesk'; font-weight:500; src:url(data:font/woff2;base64,__G500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:500; src:url(data:font/woff2;base64,__M500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:400; src:url(data:font/woff2;base64,__M400__) format('woff2'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; background:#09090a; overflow:hidden; }
+  #stage {
+    position:relative; width:1080px; height:1920px;
+    background: radial-gradient(ellipse 115% 70% at 50% 44%, #161206 0%, #09090a 60%);
+    font-family:'Space Grotesk', sans-serif;
+    transform-origin:50% 44%; will-change:transform;
+  }
+  .particle { position:absolute; border-radius:50%; background:#ecd175; opacity:0; will-change:transform,opacity; }
+
+  #eyebrow {
+    position:absolute; top:8.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:500; font-size:26px;
+    letter-spacing:.28em; text-indent:.28em; color:#3ecf8e; opacity:0;
+  }
+  #eyebrow .dot { display:inline-block; width:12px; height:12px; border-radius:50%;
+    background:#3ecf8e; margin-right:16px; vertical-align:middle; box-shadow:0 0 16px rgba(62,207,142,.95); }
+
+  #title {
+    position:absolute; top:12.5%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:104px; letter-spacing:-2px; line-height:1.0; color:#f0ede8;
+  }
+  #title .l { display:block; opacity:0; will-change:opacity, transform; }
+  #title .em { color:#ecd175; }
+
+  /* hub central + orbita de agentes */
+  #hub {
+    position:absolute; left:50%; top:44.5%; transform:translate(-50%,-50%);
+    width:620px; height:620px; opacity:0; will-change:opacity;
+  }
+  #hub svg { width:100%; height:100%; overflow:visible; }
+  #ring { fill:none; stroke:#2a2a22; stroke-width:2; }
+  #ringLive { fill:none; stroke:#3ecf8e; stroke-width:4; stroke-linecap:round;
+    stroke-dasharray:60 1600; }
+  .spoke { stroke:#5a5030; stroke-width:2.5; }
+  .agent { fill:#111113; stroke:#ecd175; stroke-width:3; }
+  #core { fill:#141308; stroke:#ecd175; stroke-width:4; }
+  #coreDot { fill:#3ecf8e; }
+  .flow { fill:#ecd175; }
+  #coreLabel { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:22px;
+    letter-spacing:.14em; fill:#d9c07a; text-anchor:middle; }
+
+  /* estados activos */
+  #states { position:absolute; left:50%; top:72%; transform:translateX(-50%); width:760px; }
+  .st { display:flex; align-items:center; gap:22px; padding:16px 30px; margin-bottom:16px;
+    border-radius:16px; background:#111113; border:1px solid #2a2a22;
+    opacity:0; transform:translateX(-30px); will-change:opacity,transform; }
+  .st .ic { width:34px; height:34px; flex-shrink:0; }
+  .st .nm { font-weight:500; font-size:32px; color:#e6e1db; flex:1; }
+  .st .badge { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:22px;
+    letter-spacing:.14em; color:#3ecf8e; display:flex; align-items:center; gap:12px; flex-shrink:0; }
+  .st .badge .bdot { width:11px; height:11px; border-radius:50%; background:#3ecf8e;
+    box-shadow:0 0 12px rgba(62,207,142,.9); }
+
+  #foot {
+    position:absolute; left:0; right:0; top:91.5%; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:500; font-size:30px;
+    letter-spacing:.24em; text-indent:.24em; color:#b89a4a; opacity:0;
+    will-change:opacity, transform;
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="particles"></div>
+  <div id="eyebrow"><span class="dot"></span>TRABAJANDO AHORA MISMO</div>
+  <div id="title">
+    <span class="l" id="t1">EQUIPO</span>
+    <span class="l em" id="t2">INVISIBLE</span>
+  </div>
+
+  <div id="hub">
+    <svg viewBox="0 0 620 620">
+      <circle id="ring" cx="310" cy="310" r="210"/>
+      <circle id="ringLive" cx="310" cy="310" r="210" transform="rotate(-90 310 310)"/>
+      <!-- spokes -->
+      <g id="spokes"></g>
+      <!-- agents (nodos) -->
+      <g id="agents"></g>
+      <!-- flujos -->
+      <g id="flows"></g>
+      <!-- core -->
+      <circle id="core" cx="310" cy="310" r="74"/>
+      <circle id="coreDot" cx="310" cy="292" r="9"/>
+      <text id="coreLabel" x="310" y="330">SISTEMA</text>
+    </svg>
+  </div>
+
+  <div id="states">
+    <div class="st" id="s1">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 20.5l1.6-4.8A8.4 8.4 0 0 1 3.6 11 8.5 8.5 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg>
+      <span class="nm">Atenci&oacute;n al cliente</span>
+      <span class="badge"><span class="bdot"></span>ACTIVO</span>
+    </div>
+    <div class="st" id="s2">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
+      <span class="nm">Seguimiento de ventas</span>
+      <span class="badge"><span class="bdot"></span>ACTIVO</span>
+    </div>
+    <div class="st" id="s3">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></svg>
+      <span class="nm">Procesos internos</span>
+      <span class="badge"><span class="bdot"></span>ACTIVO</span>
+    </div>
+  </div>
+
+  <div id="foot">24 / 7 &centerdot; LOS 365 D&Iacute;AS</div>
+</div>
+
+<script>
+  const outCubic = x => 1 - Math.pow(1-x,3);
+  const outQuint = x => 1 - Math.pow(1-x,5);
+  const outBack  = x => { const c1=1.5,c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const seg = (t,a,b) => clamp01((t-a)/(b-a));
+  const $ = id => document.getElementById(id);
+  const NS = 'http://www.w3.org/2000/svg';
+
+  function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+  const rng = mulberry32(55);
+  const amb = [];
+  for(let i=0;i<18;i++){ const el=document.createElement('div'); el.className='particle';
+    const s=3+rng()*5; el.style.width=s+'px'; el.style.height=s+'px'; if(rng()>.6) el.style.filter='blur(2px)';
+    $('particles').appendChild(el);
+    amb.push({el,x:60+rng()*960,y:500+rng()*1400,sp:20+rng()*40,sw:14+rng()*28,ph:rng()*6.28,op:.07+rng()*.15}); }
+
+  // 5 agentes en orbita
+  const CX=310, CY=310, R=210;
+  const AGN = 5;
+  const agents = [];
+  for(let i=0;i<AGN;i++){
+    const ang = -Math.PI/2 + i*(2*Math.PI/AGN);
+    const ax = CX + Math.cos(ang)*R, ay = CY + Math.sin(ang)*R;
+    // spoke
+    const sp = document.createElementNS(NS,'line');
+    sp.setAttribute('x1',CX); sp.setAttribute('y1',CY); sp.setAttribute('x2',ax); sp.setAttribute('y2',ay);
+    sp.setAttribute('class','spoke'); $('spokes').appendChild(sp);
+    // agent circle
+    const c = document.createElementNS(NS,'circle');
+    c.setAttribute('cx',ax); c.setAttribute('cy',ay); c.setAttribute('r',26);
+    c.setAttribute('class','agent'); $('agents').appendChild(c);
+    // flow dot (viaja del agente al core)
+    const f = document.createElementNS(NS,'circle');
+    f.setAttribute('r',7); f.setAttribute('class','flow'); f.setAttribute('opacity','0');
+    $('flows').appendChild(f);
+    agents.push({ang,ax,ay,c,sp,f, delay:i*0.12});
+  }
+
+  const D = 6.0;
+  window.seek = function(t){
+    $('stage').style.transform = `scale(${1 + 0.025*(t/D)})`;
+
+    amb.forEach(p=>{ const y=p.y-p.sp*t, x=p.x+Math.sin(t*.85+p.ph)*p.sw;
+      const env=seg(t,.2,1.1)*(1-seg(t,D-0.6,D));
+      p.el.style.transform=`translate(${x}px,${y}px)`;
+      p.el.style.opacity=(p.op*env*(.7+.3*Math.sin(t*2+p.ph*3))).toFixed(3); });
+
+    // eyebrow con dot pulsante
+    { const ap=Math.min(seg(t,.2,.7),1-seg(t,D-0.5,D));
+      $('eyebrow').style.opacity=(0.95*ap).toFixed(3); }
+
+    // titulo
+    { const p=outBack(seg(t,.45,1.05));
+      $('t1').style.opacity=clamp01(seg(t,.45,.8)).toFixed(3);
+      $('t1').style.transform=`translateY(${38*(1-p)}px)`; }
+    { const p=outBack(seg(t,.66,1.26));
+      $('t2').style.opacity=clamp01(seg(t,.66,1.0)).toFixed(3);
+      $('t2').style.transform=`translateY(${42*(1-p)}px)`; }
+
+    // hub aparece
+    $('hub').style.opacity = outCubic(seg(t,1.05,1.55)).toFixed(3);
+
+    // anillo vivo girando (verde)
+    { const rot = -90 + 300*t;   // gira continuo
+      const dash = 60 + 340*(0.5+0.5*Math.sin(t*1.4));
+      $('ringLive').setAttribute('transform',`rotate(${rot} 310 310)`);
+      $('ringLive').setAttribute('stroke-dasharray',`${dash} 1600`);
+      $('ringLive').setAttribute('opacity', outCubic(seg(t,1.2,1.7)).toFixed(3)); }
+
+    // agentes aparecen (pop) + flujos viajando al core
+    agents.forEach((a,i)=>{
+      const ap = seg(t, 1.25+a.delay, 1.7+a.delay);
+      const sc = ap===0?0:outBack(ap);
+      a.c.setAttribute('transform',`translate(${a.ax*(1-sc)+CX*0} 0)`);
+      a.c.setAttribute('r', 26*sc);
+      a.c.setAttribute('opacity', clamp01(ap*1.6).toFixed(3));
+      a.sp.setAttribute('opacity', (0.7*ap).toFixed(3));
+      // flujo pulsante hacia el core (loop)
+      const fp = ((t*0.6 + i*0.2) % 1);
+      const fx = a.ax + (CX-a.ax)*fp, fy = a.ay + (CY-a.ay)*fp;
+      a.f.setAttribute('cx',fx); a.f.setAttribute('cy',fy);
+      a.f.setAttribute('opacity', (t>1.6 ? (0.9*Math.sin(fp*Math.PI)).toFixed(3) : 0));
+    });
+    // core dot pulso
+    $('coreDot').setAttribute('r', 9 + 2*Math.sin(t*3.2));
+
+    // estados activos aparecen escalonados
+    ['s1','s2','s3'].forEach((id,i)=>{
+      const p=seg(t, 2.2+i*0.4, 2.65+i*0.4);
+      $(id).style.opacity=p.toFixed(3);
+      $(id).style.transform=`translateX(${-30*(1-outBack(p))}px)`;
+      // badge dot pulso
+      const bd=$(id).querySelector('.bdot');
+      if(bd) bd.style.transform=`scale(${1+0.25*Math.sin(t*3+i)})`;
+    });
+
+    // footer
+    { const p=outCubic(seg(t,3.6,4.1));
+      $('foot').style.opacity=(0.92*p).toFixed(3);
+      $('foot').style.transform=`translateY(${14*(1-p)}px)`; }
+  };
+  window.seek(0);
+</script>
+</body>
+</html>

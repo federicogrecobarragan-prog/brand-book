@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:'Space Grotesk'; font-weight:700; src:url(data:font/woff2;base64,__G700__) format('woff2'); }
+  @font-face { font-family:'Space Grotesk'; font-weight:500; src:url(data:font/woff2;base64,__G500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:500; src:url(data:font/woff2;base64,__M500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:400; src:url(data:font/woff2;base64,__M400__) format('woff2'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; background:#09090a; overflow:hidden; }
+  #stage {
+    position:relative; width:1080px; height:1920px;
+    background: radial-gradient(ellipse 120% 75% at 50% 30%, #17130a 0%, #09090a 60%);
+    font-family:'Space Grotesk', sans-serif;
+    transform-origin:50% 42%; will-change:transform;
+  }
+  .particle { position:absolute; border-radius:50%; background:#ecd175; opacity:0; will-change:transform,opacity; }
+
+  /* vignette que se cierra (sensacion de atrapado) */
+  #vignette {
+    position:absolute; inset:0; pointer-events:none; opacity:0;
+    background: radial-gradient(ellipse 78% 62% at 50% 46%, rgba(0,0,0,0) 40%, rgba(0,0,0,.72) 100%);
+    will-change:opacity;
+  }
+
+  #eyebrow {
+    position:absolute; top:9%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:500; font-size:26px;
+    letter-spacing:.3em; text-indent:.3em; color:#b89a4a; opacity:0;
+  }
+  #eyebrow .dot { display:inline-block; width:11px; height:11px; border-radius:50%;
+    background:#ecd175; margin-right:16px; vertical-align:middle;
+    box-shadow:0 0 16px rgba(236,209,117,.9); }
+
+  #title {
+    position:absolute; top:13.5%; left:0; right:0; text-align:center;
+    font-weight:700; letter-spacing:-2px; line-height:.98; color:#f0ede8;
+  }
+  #title .l { display:block; opacity:0; will-change:opacity, transform; }
+  #title .l1 { font-size:120px; }
+  #title .l2 { font-size:120px; color:#ecd175; }
+  /* glifo de loop infinito girando */
+  #loop {
+    position:absolute; top:25.7%; left:50%; transform:translateX(-50%);
+    width:70px; height:70px; opacity:0; will-change:opacity, transform;
+  }
+  #loop svg { width:100%; height:100%; }
+
+  /* pila de chips de tareas */
+  #stack {
+    position:absolute; left:50%; top:35%; transform:translateX(-50%);
+    width:820px; height:700px;
+  }
+  .chip {
+    position:absolute; left:0; right:0;
+    display:flex; align-items:center; gap:22px;
+    height:88px; padding:0 34px;
+    border-radius:18px; background:#111113; border:1px solid #2a2a22;
+    box-shadow:0 10px 30px rgba(0,0,0,.45);
+    opacity:0; will-change:transform, opacity;
+  }
+  .chip .bar { width:6px; height:44px; border-radius:3px; background:#ecd175; flex-shrink:0; }
+  .chip .tx { font-family:'JetBrains Mono', monospace; font-weight:400; font-size:34px;
+    letter-spacing:.01em; color:#d8d3ce; white-space:nowrap; overflow:hidden; }
+  .chip .rep { margin-left:auto; font-family:'JetBrains Mono', monospace; font-weight:500;
+    font-size:24px; letter-spacing:.12em; color:#8a7538; flex-shrink:0; }
+
+  /* contador de agobio */
+  #counter {
+    position:absolute; left:0; right:0; top:85.5%; text-align:center;
+    opacity:0; will-change:opacity, transform;
+  }
+  #counter .lbl { font-family:'JetBrains Mono', monospace; font-weight:500; font-size:26px;
+    letter-spacing:.26em; text-indent:.26em; color:#9b9591; display:block; margin-bottom:10px; }
+  #counter .num { font-weight:700; font-size:110px; letter-spacing:-2px; color:#ecd175;
+    text-shadow:0 0 70px rgba(236,209,117,.45); line-height:1; }
+  #counter .suf { font-weight:500; font-size:40px; color:#9b9591; margin-left:14px; letter-spacing:.02em; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="particles"></div>
+
+  <div id="eyebrow"><span class="dot"></span>CARGA OPERATIVA</div>
+  <div id="title">
+    <span class="l l1" id="tl1">TAREAS</span>
+    <span class="l l2" id="tl2">REPETITIVAS</span>
+  </div>
+  <div id="loop">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M17 2l4 4-4 4"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+      <path d="M7 22l-4-4 4-4"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+    </svg>
+  </div>
+
+  <div id="stack"></div>
+
+  <div id="counter">
+    <span class="lbl">ESTA SEMANA</span>
+    <span><span class="num" id="cnum">0</span><span class="suf">tareas a mano</span></span>
+  </div>
+
+  <div id="vignette"></div>
+</div>
+
+<script>
+  const outCubic = x => 1 - Math.pow(1-x,3);
+  const outQuint = x => 1 - Math.pow(1-x,5);
+  const outBack  = x => { const c1=1.6,c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const seg = (t,a,b) => clamp01((t-a)/(b-a));
+  const $ = id => document.getElementById(id);
+
+  function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+  const rng = mulberry32(77);
+
+  // polvo dorado
+  const amb = [];
+  for(let i=0;i<20;i++){
+    const el=document.createElement('div'); el.className='particle';
+    const s=3+rng()*6; el.style.width=s+'px'; el.style.height=s+'px';
+    if(rng()>.6) el.style.filter='blur(2px)';
+    $('particles').appendChild(el);
+    amb.push({el,x:60+rng()*960,y:500+rng()*1400,sp:20+rng()*44,sw:14+rng()*30,ph:rng()*6.28,op:.07+rng()*.16});
+  }
+
+  // las 5 tareas que se repiten (ciclan)
+  const TASKS = [
+    ['Responder el mismo mensaje','x8'],
+    ['Cargar la factura a mano','x5'],
+    ['Mandar el recordatorio','x12'],
+    ['Actualizar la planilla','x6'],
+    ['Copiar y pegar los datos','x9'],
+  ];
+  // 6 chips que caen y se apilan (las tareas se repiten -> reusa la lista)
+  const N = 6;
+  const CH = 88, GAP = 14;           // alto chip + gap
+  const chips = [];
+  const stackEl = $('stack');
+  for(let i=0;i<N;i++){
+    const el=document.createElement('div'); el.className='chip';
+    const [tx,rep] = TASKS[i % TASKS.length];
+    el.innerHTML = '<div class="bar"></div><div class="tx">'+tx+'</div><div class="rep">'+rep+'</div>';
+    stackEl.appendChild(el);
+    chips.push(el);
+  }
+  // orden de aparicion acelerando: primero lento, despues rafaga
+  const startTimes = [];
+  { let t=1.35, dt=0.42;
+    for(let i=0;i<N;i++){ startTimes.push(t); t+=dt; dt*=0.82; } }
+
+  const D = 6.0;
+
+  window.seek = function(t){
+    // leve push-in
+    $('stage').style.transform = `scale(${1 + 0.03*(t/D)})`;
+
+    // polvo
+    amb.forEach(p=>{
+      const y=p.y-p.sp*t, x=p.x+Math.sin(t*.85+p.ph)*p.sw;
+      const env=seg(t,.2,1.1)*(1-seg(t,D-0.6,D));
+      p.el.style.transform=`translate(${x}px,${y}px)`;
+      p.el.style.opacity=(p.op*env*(.7+.3*Math.sin(t*2+p.ph*3))).toFixed(3);
+    });
+
+    // eyebrow
+    $('eyebrow').style.opacity = (0.95*Math.min(seg(t,.2,.7),1-seg(t,D-0.5,D))).toFixed(3);
+
+    // titulo: dos lineas slam-in
+    { const p=outBack(seg(t,.45,1.05));
+      $('tl1').style.opacity=clamp01(seg(t,.45,.8)).toFixed(3);
+      $('tl1').style.transform=`translateY(${40*(1-p)}px) scale(${.9+.1*p})`; }
+    { const p=outBack(seg(t,.68,1.28));
+      $('tl2').style.opacity=clamp01(seg(t,.68,1.0)).toFixed(3);
+      $('tl2').style.transform=`translateY(${44*(1-p)}px) scale(${.9+.1*p})`; }
+
+    // loop glifo: aparece y gira continuo (repeticion)
+    { const ap=seg(t,1.1,1.5);
+      const rot = 360 * (t*0.9);       // giro constante
+      $('loop').style.opacity=(0.9*ap).toFixed(3);
+      $('loop').style.transform=`translateX(-50%) rotate(${rot}deg)`; }
+
+    // chips caen y se apilan desde abajo hacia arriba
+    chips.forEach((el,i)=>{
+      const st = startTimes[i];
+      const p = seg(t, st, st+0.5);
+      // posicion final: apiladas de abajo (i=0 abajo)
+      const yFinal = (N-1-i) * (CH+GAP);
+      const drop = 120;               // cae desde 120px arriba de su lugar
+      const y = yFinal - drop*(1-outQuint(p));
+      const op = clamp01(p*1.6);
+      const sc = 0.96 + 0.04*outBack(p);
+      // micro-rebote al aterrizar
+      const land = p>=1 ? 1 : p;
+      el.style.opacity = op.toFixed(3);
+      el.style.transform = `translateY(${y}px) scale(${sc})`;
+    });
+
+    // contador de agobio: 0 -> 214 mientras caen los chips
+    { const ap=seg(t,1.5,1.95);
+      $('counter').style.opacity=(0.98*ap).toFixed(3);
+      $('counter').style.transform=`translateY(${16*(1-outCubic(ap))}px)`;
+      const cp = outQuint(seg(t,1.6,4.6));
+      $('cnum').textContent = Math.round(214*cp);
+    }
+
+    // vignette se cierra al final (atrapado)
+    $('vignette').style.opacity = (0.9*seg(t,3.4,5.6)).toFixed(3);
+  };
+  window.seek(0);
+</script>
+</body>
+</html>

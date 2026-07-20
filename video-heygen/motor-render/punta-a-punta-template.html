@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:'Space Grotesk'; font-weight:700; src:url(data:font/woff2;base64,__G700__) format('woff2'); }
+  @font-face { font-family:'Space Grotesk'; font-weight:500; src:url(data:font/woff2;base64,__G500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:500; src:url(data:font/woff2;base64,__M500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:400; src:url(data:font/woff2;base64,__M400__) format('woff2'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; background:#09090a; overflow:hidden; }
+  #stage {
+    position:relative; width:1080px; height:1920px;
+    background: radial-gradient(ellipse 115% 72% at 50% 46%, #161206 0%, #09090a 60%);
+    font-family:'Space Grotesk', sans-serif;
+    transform-origin:50% 46%; will-change:transform;
+  }
+  .particle { position:absolute; border-radius:50%; background:#ecd175; opacity:0; will-change:transform,opacity; }
+
+  #eyebrow {
+    position:absolute; top:9%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:500; font-size:26px;
+    letter-spacing:.28em; text-indent:.28em; color:#b89a4a; opacity:0;
+  }
+  #eyebrow .dot { display:inline-block; width:11px; height:11px; border-radius:50%;
+    background:#ecd175; margin-right:16px; vertical-align:middle; box-shadow:0 0 15px rgba(236,209,117,.9); }
+
+  #title {
+    position:absolute; top:13%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:96px; letter-spacing:-2px; line-height:1.02; color:#f0ede8;
+  }
+  #title .l { display:block; opacity:0; will-change:opacity, transform; }
+  #title .em { color:#ecd175; }
+
+  /* pilares */
+  #pillars { position:absolute; left:50%; top:35%; transform:translateX(-50%); width:820px; }
+  .pil {
+    position:relative; display:flex; align-items:center; gap:34px;
+    padding:40px 44px; margin-bottom:40px;
+    border-radius:24px; background:#111113; border:1px solid #252529;
+    opacity:0; transform:translateY(40px); will-change:opacity,transform;
+  }
+  .pil .accent {
+    position:absolute; left:0; top:22px; bottom:22px; width:7px; border-radius:4px;
+    background:#ecd175; transform:scaleY(0); transform-origin:top; will-change:transform;
+  }
+  .pil .ico {
+    width:96px; height:96px; border-radius:22px; flex-shrink:0;
+    background:#17140a; border:1px solid #3a3320;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pil .ico svg { width:52px; height:52px; }
+  .pil .tx { flex:1; }
+  .pil .k { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:22px;
+    letter-spacing:.2em; color:#b89a4a; margin-bottom:8px; }
+  .pil .h { font-weight:700; font-size:44px; color:#f0ede8; letter-spacing:-.5px; }
+  .pil .chk { width:44px; height:44px; flex-shrink:0; opacity:0; will-change:opacity, transform; }
+
+  /* linea de flujo que conecta los pilares */
+  #flowline {
+    position:absolute; left:calc(50% - 410px + 44px + 48px); top:35%;
+    width:5px; background:linear-gradient(#ecd175, #b89a4a);
+    transform-origin:top; transform:scaleY(0); will-change:transform; opacity:.55;
+  }
+
+  #foot {
+    position:absolute; left:0; right:0; top:88.5%; text-align:center;
+    opacity:0; will-change:opacity, transform;
+  }
+  #foot .big { font-weight:700; font-size:52px; color:#f0ede8; letter-spacing:-.5px; }
+  #foot .big .em { color:#ecd175; }
+  #foot .sub { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:24px;
+    letter-spacing:.2em; text-indent:.2em; color:#3ecf8e; margin-top:12px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="particles"></div>
+  <div id="eyebrow"><span class="dot"></span>SOLUCIONES INTEGRALES</div>
+  <div id="title">
+    <span class="l" id="t1">DE PUNTA</span>
+    <span class="l em" id="t2">A PUNTA</span>
+  </div>
+
+  <div id="flowline"></div>
+  <div id="pillars">
+    <div class="pil" id="p1">
+      <div class="accent"></div>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 20.5l1.6-4.8A8.4 8.4 0 0 1 3.6 11 8.5 8.5 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/></svg></div>
+      <div class="tx"><div class="k">01</div><div class="h">Atenci&oacute;n al cliente</div></div>
+      <svg class="chk" id="c1" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="#28613f"/><path d="M7 12.5l3.5 3.5L17 9"/></svg>
+    </div>
+    <div class="pil" id="p2">
+      <div class="accent"></div>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div>
+      <div class="tx"><div class="k">02</div><div class="h">Gesti&oacute;n de ventas</div></div>
+      <svg class="chk" id="c2" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="#28613f"/><path d="M7 12.5l3.5 3.5L17 9"/></svg>
+    </div>
+    <div class="pil" id="p3">
+      <div class="accent"></div>
+      <div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.2a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3a2 2 0 1 1 0-4h.2a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.2a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.2a1.6 1.6 0 0 0-1.4 1z"/></svg></div>
+      <div class="tx"><div class="k">03</div><div class="h">Procesos internos</div></div>
+      <svg class="chk" id="c3" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10" stroke="#28613f"/><path d="M7 12.5l3.5 3.5L17 9"/></svg>
+    </div>
+  </div>
+
+  <div id="foot">
+    <div class="big">Un <span class="em">solo sistema</span></div>
+    <div class="sub">&centerdot; TODO TU NEGOCIO, CUBIERTO &centerdot;</div>
+  </div>
+</div>
+
+<script>
+  const outCubic = x => 1 - Math.pow(1-x,3);
+  const outQuint = x => 1 - Math.pow(1-x,5);
+  const inOutCubic = x => x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2;
+  const outBack  = x => { const c1=1.5,c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const seg = (t,a,b) => clamp01((t-a)/(b-a));
+  const $ = id => document.getElementById(id);
+
+  function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+  const rng = mulberry32(88);
+  const amb = [];
+  for(let i=0;i<18;i++){ const el=document.createElement('div'); el.className='particle';
+    const s=3+rng()*5; el.style.width=s+'px'; el.style.height=s+'px'; if(rng()>.6) el.style.filter='blur(2px)';
+    $('particles').appendChild(el);
+    amb.push({el,x:60+rng()*960,y:500+rng()*1400,sp:20+rng()*40,sw:14+rng()*28,ph:rng()*6.28,op:.07+rng()*.15}); }
+
+  const D = 5.5;
+  const P = ['p1','p2','p3'], C = ['c1','c2','c3'];
+  const pStart = [1.35, 1.85, 2.35];
+
+  window.seek = function(t){
+    $('stage').style.transform = `scale(${1 + 0.025*(t/D)})`;
+
+    amb.forEach(p=>{ const y=p.y-p.sp*t, x=p.x+Math.sin(t*.85+p.ph)*p.sw;
+      const env=seg(t,.2,1.1)*(1-seg(t,D-0.6,D));
+      p.el.style.transform=`translate(${x}px,${y}px)`;
+      p.el.style.opacity=(p.op*env*(.7+.3*Math.sin(t*2+p.ph*3))).toFixed(3); });
+
+    $('eyebrow').style.opacity = (0.95*Math.min(seg(t,.2,.7),1-seg(t,D-0.5,D))).toFixed(3);
+
+    { const p=outBack(seg(t,.42,1.02));
+      $('t1').style.opacity=clamp01(seg(t,.42,.78)).toFixed(3);
+      $('t1').style.transform=`translateY(${38*(1-p)}px)`; }
+    { const p=outBack(seg(t,.62,1.22));
+      $('t2').style.opacity=clamp01(seg(t,.62,.98)).toFixed(3);
+      $('t2').style.transform=`translateY(${42*(1-p)}px)`; }
+
+    // linea de flujo crece hasta cubrir los 3 pilares
+    { const p=inOutCubic(seg(t,1.4,3.0));
+      $('flowline').style.height = (P.length*236 - 96) + 'px';
+      $('flowline').style.transform=`scaleY(${p})`; }
+
+    // pilares aparecen + acento crece + check
+    P.forEach((id,i)=>{
+      const p=seg(t, pStart[i], pStart[i]+0.5);
+      const e=outBack(p);
+      $(id).style.opacity=clamp01(p*1.5).toFixed(3);
+      $(id).style.transform=`translateY(${40*(1-e)}px)`;
+      const ac=$(id).querySelector('.accent');
+      ac.style.transform=`scaleY(${outCubic(seg(t, pStart[i]+0.12, pStart[i]+0.6))})`;
+      // check verde pop
+      const cp=seg(t, pStart[i]+0.32, pStart[i]+0.7);
+      const ch=$(C[i]);
+      ch.style.opacity=clamp01(cp*1.5).toFixed(3);
+      ch.style.transform=`scale(${cp===0?0:outBack(cp)})`;
+    });
+
+    // footer
+    { const p=outCubic(seg(t,3.5,4.05));
+      $('foot').style.opacity=(0.96*p).toFixed(3);
+      $('foot').style.transform=`translateY(${16*(1-p)}px)`; }
+  };
+  window.seek(0);
+</script>
+</body>
+</html>
