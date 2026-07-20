@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:'Space Grotesk'; font-weight:700; src:url(data:font/woff2;base64,__G700__) format('woff2'); }
+  @font-face { font-family:'Space Grotesk'; font-weight:500; src:url(data:font/woff2;base64,__G500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:500; src:url(data:font/woff2;base64,__M500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:400; src:url(data:font/woff2;base64,__M400__) format('woff2'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; background:#09090a; overflow:hidden; }
+  #stage {
+    position:relative; width:1080px; height:1920px;
+    background: radial-gradient(ellipse 130% 80% at 50% 44%, #131315 0%, #09090a 65%);
+    font-family:'Space Grotesk', sans-serif;
+  }
+  .particle { position:absolute; border-radius:50%; background:#ecd175; opacity:0; will-change:transform,opacity; }
+  #eyebrow {
+    position:absolute; top:7.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:22px;
+    letter-spacing:.28em; text-indent:.28em; color:#b89a4a; opacity:0;
+  }
+  #eyebrow .dot { display:inline-block; width:10px; height:10px; border-radius:50%;
+    background:#3ecf8e; margin-right:16px; vertical-align:middle; box-shadow:0 0 14px rgba(62,207,142,.9); }
+  #urlbar {
+    position:absolute; bottom:6.2%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:400; font-size:26px;
+    letter-spacing:.05em; color:#5a5652; opacity:0;
+  }
+  .scene { position:absolute; inset:0; opacity:0; will-change:opacity,transform; }
+
+  /* ===== A : demos gratis ===== */
+  #a-title {
+    position:absolute; top:18.5%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:66px; line-height:1.16; letter-spacing:-1px; color:#f0ede8;
+  }
+  #a-title .em { color:#3ecf8e; }
+  #a-cards { position:absolute; left:50%; top:35.5%; transform:translateX(-50%); width:780px; }
+  .bot {
+    display:flex; align-items:center; gap:26px;
+    padding:30px 34px; margin-bottom:22px;
+    border-radius:20px; background:#111113; border:1px solid #252529;
+    opacity:0; transform:translateY(34px); will-change:opacity,transform;
+  }
+  .bot .ico {
+    width:72px; height:72px; border-radius:18px; flex-shrink:0;
+    background:#17171a; border:1px solid #32323a;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .bot .txt { flex:1; }
+  .bot .nm { font-weight:700; font-size:38px; color:#f0ede8; letter-spacing:-.5px; }
+  .bot .nm .em { color:#ecd175; }
+  .bot .ds { font-family:'JetBrains Mono',monospace; font-weight:400; font-size:19px;
+    letter-spacing:.1em; color:#6d6862; margin-top:6px; }
+  .bot .tag {
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; letter-spacing:.16em;
+    color:#3ecf8e; border:1px solid rgba(62,207,142,.4); background:rgba(62,207,142,.08);
+    border-radius:999px; padding:12px 22px; flex-shrink:0;
+  }
+  #a-foot {
+    position:absolute; top:69%; left:0; right:0; text-align:center;
+    font-weight:500; font-size:32px; color:#9b9591;
+    opacity:0; transform:translateY(16px); will-change:opacity,transform;
+  }
+
+  /* ===== B : blueprint ===== */
+  #b-title {
+    position:absolute; top:20%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:66px; line-height:1.16; letter-spacing:-1px; color:#f0ede8;
+  }
+  #b-title .em { color:#ecd175; }
+  #bp {
+    position:absolute; left:50%; top:36%; transform:translateX(-50%);
+    width:760px; height:560px; opacity:0; will-change:opacity;
+  }
+  #bp svg { width:100%; height:100%; overflow:visible; }
+  .bpLine { fill:none; stroke:#ecd175; stroke-width:3; stroke-linecap:round; opacity:.75; }
+  .bpNode { fill:#111113; stroke:#ecd175; stroke-width:3; }
+  .bpNodeG { fill:#111113; stroke:#3ecf8e; stroke-width:3; }
+  .bpTxt { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:19px;
+    letter-spacing:.12em; fill:#9b9591; text-anchor:middle; }
+  .bpDot { fill:#3ecf8e; }
+  #b-sub {
+    position:absolute; top:70.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:26px;
+    letter-spacing:.2em; text-indent:.2em; color:#ecd175;
+    opacity:0; transform:translateY(16px); will-change:opacity,transform;
+  }
+
+  /* ===== C : propuesta de valor ===== */
+  #c-title {
+    position:absolute; top:19%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:64px; letter-spacing:-1px; color:#f0ede8;
+  }
+  #c-title .em { color:#ecd175; }
+  #c-cards { position:absolute; left:50%; top:33%; transform:translateX(-50%); width:800px; }
+  .vc {
+    padding:34px 38px; margin-bottom:24px;
+    border-radius:22px; background:#111113; border:1px solid #252529;
+    opacity:0; transform:translateY(36px) scale(.97); will-change:opacity,transform;
+  }
+  .vc .k {
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:21px;
+    letter-spacing:.22em; color:#b89a4a; margin-bottom:14px;
+  }
+  .vc .h { font-weight:700; font-size:46px; color:#f0ede8; letter-spacing:-.5px; }
+  .vc .h .em { color:#ecd175; }
+  .vc .d { font-weight:500; font-size:28px; color:#9b9591; margin-top:10px; }
+
+  /* ===== D : CTA ===== */
+  #d-title {
+    position:absolute; top:18.5%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:70px; line-height:1.16; letter-spacing:-1px; color:#f0ede8;
+    opacity:0; transform:translateY(30px); will-change:opacity,transform;
+  }
+  #d-title .em { color:#ecd175; }
+  #d-btnWrap {
+    position:absolute; left:50%; top:36.5%; transform:translate(-50%,0) scale(.6);
+    opacity:0; will-change:opacity,transform;
+  }
+  #d-btn {
+    position:relative; overflow:hidden;
+    font-weight:700; font-size:42px; letter-spacing:.04em; color:#111113;
+    background:linear-gradient(180deg,#f5e2a0 0%,#ecd175 55%,#dfbe5e 100%);
+    padding:32px 66px; border-radius:999px; white-space:nowrap;
+    box-shadow:0 0 70px rgba(236,209,117,.45), 0 10px 40px rgba(0,0,0,.5);
+  }
+  #d-shine {
+    position:absolute; top:-30%; left:0; width:30%; height:160%;
+    background:linear-gradient(105deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.55) 50%, rgba(255,255,255,0) 100%);
+    transform:translateX(-300%); will-change:transform;
+  }
+  #d-sub {
+    position:absolute; top:45.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:27px;
+    letter-spacing:.14em; color:#3ecf8e;
+    opacity:0; transform:translateY(16px); will-change:opacity,transform;
+  }
+  #d-logo {
+    position:absolute; left:50%; top:56%; width:360px; height:360px;
+    transform:translateX(-50%) scale(.8); opacity:0;
+    filter:drop-shadow(0 0 80px rgba(236,209,117,.30)); will-change:opacity,transform;
+  }
+  #logoCanvas { width:100%; height:100%; display:block; }
+  #dPulse {
+    position:absolute; left:50%; top:56%; margin-top:180px;
+    width:360px; height:360px; border:3px solid #3ecf8e; border-radius:50%;
+    transform:translate(-50%,-50%) scale(.95); opacity:0; will-change:transform,opacity;
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="particles"></div>
+  <div id="eyebrow"><span class="dot"></span>OFICINA DE JHONSON &centerdot; SISTEMAS A MEDIDA</div>
+
+  <!-- A -->
+  <div class="scene" id="sceneA">
+    <div id="a-title">Nuestras demos<br>son <span class="em">100% gratis</span>.</div>
+    <div id="a-cards">
+      <div class="bot" id="bot1">
+        <div class="ico">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2">
+            <rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="nm">Agenda<span class="em">Bot</span></div>
+          <div class="ds">RECORDATORIOS QUE NO FALLAN</div></div>
+        <div class="tag">GRATIS</div>
+      </div>
+      <div class="bot" id="bot2">
+        <div class="ico">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2">
+            <path d="M6 2.5h8l5 5V21a.5.5 0 0 1-.5.5h-12A.5.5 0 0 1 6 21V3a.5.5 0 0 1 .5-.5z"/>
+            <path d="M14 2.5V8h5M9 13h6M9 17h6"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="nm">Factura<span class="em">Bot</span></div>
+          <div class="ds">CONTABILIDAD QUE AUTOMATIZA</div></div>
+        <div class="tag">GRATIS</div>
+      </div>
+      <div class="bot" id="bot3">
+        <div class="ico">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2" stroke-linejoin="round">
+            <path d="M12 3l2.6 5.6 6.1.8-4.5 4.2 1.2 6.1L12 16.8 6.6 19.7l1.2-6.1L3.3 9.4l6.1-.8z"/>
+          </svg>
+        </div>
+        <div class="txt"><div class="nm">Rese&ntilde;a<span class="em">Bot</span></div>
+          <div class="ds">REPUTACI&Oacute;N EN PILOTO AUTOM&Aacute;TICO</div></div>
+        <div class="tag">GRATIS</div>
+      </div>
+    </div>
+    <div id="a-foot">Sin tarjeta. Sin instalar nada. Hoy mismo.</div>
+  </div>
+
+  <!-- B -->
+  <div class="scene" id="sceneB">
+    <div id="b-title">Pero tu negocio<br><span class="em">no es una plantilla</span>.</div>
+    <div id="bp">
+      <svg viewBox="0 0 760 560">
+        <path class="bpLine" id="l1" d="M380 90 L380 190"/>
+        <path class="bpLine" id="l2" d="M380 250 L150 350"/>
+        <path class="bpLine" id="l3" d="M380 250 L380 350"/>
+        <path class="bpLine" id="l4" d="M380 250 L610 350"/>
+        <path class="bpLine" id="l5" d="M150 410 L380 490"/>
+        <path class="bpLine" id="l6" d="M380 410 L380 490"/>
+        <path class="bpLine" id="l7" d="M610 410 L380 490"/>
+
+        <g id="n0"><rect class="bpNode" x="290" y="40" width="180" height="52" rx="14"/>
+          <text class="bpTxt" x="380" y="72">TU NEGOCIO</text></g>
+        <g id="n1"><rect class="bpNode" x="290" y="192" width="180" height="58" rx="14"/>
+          <text class="bpTxt" x="380" y="228">SISTEMA</text></g>
+        <g id="n2"><rect class="bpNode" x="72" y="352" width="156" height="58" rx="14"/>
+          <text class="bpTxt" x="150" y="388">VENTAS</text></g>
+        <g id="n3"><rect class="bpNode" x="302" y="352" width="156" height="58" rx="14"/>
+          <text class="bpTxt" x="380" y="388">STOCK</text></g>
+        <g id="n4"><rect class="bpNode" x="532" y="352" width="156" height="58" rx="14"/>
+          <text class="bpTxt" x="610" y="388">CLIENTES</text></g>
+        <g id="n5"><rect class="bpNodeG" x="278" y="490" width="204" height="58" rx="14"/>
+          <text class="bpTxt" x="380" y="526" style="fill:#3ecf8e">AUTOM&Aacute;TICO</text>
+        </g>
+        <circle class="bpDot" id="d1" cx="380" cy="90" r="6"/>
+        <circle class="bpDot" id="d2" cx="380" cy="90" r="6"/>
+        <circle class="bpDot" id="d3" cx="380" cy="90" r="6"/>
+      </svg>
+    </div>
+    <div id="b-sub">DISE&Ntilde;ADO PARA TU FLUJO REAL</div>
+  </div>
+
+  <!-- C -->
+  <div class="scene" id="sceneC">
+    <div id="c-title">Sistemas <span class="em">a medida</span>.</div>
+    <div id="c-cards">
+      <div class="vc" id="v1">
+        <div class="k">COSTO</div>
+        <div class="h">Totalmente <span class="em">accesible</span></div>
+        <div class="d">Sin licencias eternas ni sorpresas.</div>
+      </div>
+      <div class="vc" id="v2">
+        <div class="k">ENTREGA</div>
+        <div class="h">En tiempo <span class="em">r&eacute;cord</span></div>
+        <div class="d">Semanas, no meses.</div>
+      </div>
+      <div class="vc" id="v3">
+        <div class="k">ALCANCE</div>
+        <div class="h">Crece <span class="em">con vos</span></div>
+        <div class="d">Empez&aacute;s chico, escal&aacute;s cuando quieras.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="scene" id="sceneD">
+    <div id="d-title">Hablemos.<br>El asesoramiento<br>es <span class="em">sin cargo</span>.</div>
+    <div id="d-btnWrap"><div id="d-btn">QUIERO MI SISTEMA<div id="d-shine"></div></div></div>
+    <div id="d-sub">&centerdot; SIN COMPROMISO &centerdot; RESPUESTA EN 24 HS &centerdot;</div>
+    <div id="dPulse"></div>
+    <div id="d-logo"><canvas id="logoCanvas" width="1400" height="1400"></canvas></div>
+  </div>
+
+  <div id="urlbar">oficinadejhonson.com</div>
+</div>
+
+<script>
+  const outCubic = x => 1 - Math.pow(1-x,3);
+  const outQuint = x => 1 - Math.pow(1-x,5);
+  const inOutCubic = x => x<.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2;
+  const outBack = x => { const c1=1.5,c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const seg = (t,a,b) => clamp01((t-a)/(b-a));
+  const $ = id => document.getElementById(id);
+  const win = (t,a,b,f=.4) => Math.min(seg(t,a,a+f), 1-seg(t,b-f,b));
+
+  function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+  const rng = mulberry32(31);
+  const amb = [];
+  for(let i=0;i<18;i++){
+    const el=document.createElement('div'); el.className='particle';
+    const s=3+rng()*5; el.style.width=s+'px'; el.style.height=s+'px';
+    if(rng()>.6) el.style.filter='blur(2px)';
+    $('particles').appendChild(el);
+    amb.push({el,x:60+rng()*960,y:500+rng()*1400,sp:20+rng()*40,sw:14+rng()*28,ph:rng()*6.28,op:.08+rng()*.18});
+  }
+
+  // longitudes de las líneas del blueprint
+  const LINES = ['l1','l2','l3','l4','l5','l6','l7'].map(id=>{
+    const el = $(id); const len = el.getTotalLength();
+    el.style.strokeDasharray = len; el.style.strokeDashoffset = len;
+    return {el, len};
+  });
+  // recorridos de los dots pulsantes (por las 3 ramas)
+  const DOTS = [
+    {el:$('d1'), path:[[380,250],[150,350],[150,410],[380,490]]},
+    {el:$('d2'), path:[[380,250],[380,350],[380,410],[380,490]]},
+    {el:$('d3'), path:[[380,250],[610,350],[610,410],[380,490]]},
+  ];
+  function alongPath(pts, u){
+    // u ∈ [0,1] sobre la polilínea
+    const segs = pts.length - 1;
+    const s = Math.min(Math.floor(u*segs), segs-1);
+    const lu = u*segs - s;
+    return [pts[s][0] + (pts[s+1][0]-pts[s][0])*lu, pts[s][1] + (pts[s+1][1]-pts[s][1])*lu];
+  }
+
+  // chroma-key del logo real
+  window.logoReady = (async function(){
+    const img = new Image(); img.src = 'data:image/jpeg;base64,__LOGO__';
+    await img.decode();
+    const W=img.naturalWidth, H=img.naturalHeight;
+    const c=document.createElement('canvas'); c.width=W; c.height=H;
+    const ctx=c.getContext('2d'); ctx.drawImage(img,0,0);
+    const d=ctx.getImageData(0,0,W,H); const px=d.data;
+    const isBg=i=>{const r=px[i],g=px[i+1],b=px[i+2];const mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx>215&&(mx-mn)<30;};
+    const vis=new Uint8Array(W*H); const st=[];
+    for(let x=0;x<W;x++){st.push(x,0,x,H-1);} for(let y=0;y<H;y++){st.push(0,y,W-1,y);}
+    while(st.length){const y=st.pop(),x=st.pop();
+      if(x<0||y<0||x>=W||y>=H) continue;
+      const idx=y*W+x; if(vis[idx]) continue; vis[idx]=1;
+      const i4=idx*4; if(!isBg(i4)) continue;
+      px[i4+3]=0; st.push(x+1,y,x-1,y,x,y+1,x,y-1);
+    }
+    ctx.putImageData(d,0,0);
+    let minX=W,minY=H,maxX=0,maxY=0;
+    for(let y=0;y<H;y+=2) for(let x=0;x<W;x+=2)
+      if(px[(y*W+x)*4+3]>10){ if(x<minX)minX=x; if(x>maxX)maxX=x; if(y<minY)minY=y; if(y>maxY)maxY=y; }
+    const bw=maxX-minX+1, bh=maxY-minY+1, side=Math.max(bw,bh);
+    const out=$('logoCanvas'); const octx=out.getContext('2d');
+    out.width=1400; out.height=1400;
+    const sc=1360/side; octx.clearRect(0,0,1400,1400);
+    octx.drawImage(c, minX,minY,bw,bh, (1400-bw*sc)/2, (1400-bh*sc)/2, bw*sc, bh*sc);
+    return true;
+  })();
+
+  window.seek = function(t){
+    $('eyebrow').style.opacity = (0.95*Math.min(seg(t,.15,.75), 1-seg(t,15.4,16.0))).toFixed(3);
+    $('urlbar').style.opacity  = (0.9 *Math.min(seg(t,.35,1.0), 1-seg(t,15.4,16.0))).toFixed(3);
+
+    amb.forEach(p=>{
+      const y=p.y-p.sp*t, x=p.x+Math.sin(t*.8+p.ph)*p.sw;
+      const env=seg(t,.2,1.1)*(1-seg(t,15.2,16.0));
+      p.el.style.transform=`translate(${x}px,${y}px)`;
+      p.el.style.opacity=(p.op*env*(.7+.3*Math.sin(t*2+p.ph*3))).toFixed(3);
+    });
+
+    // ---------- A : 0 → 4.6 ----------
+    {
+      const w = win(t,0,4.6,.45);
+      $('sceneA').style.opacity = w.toFixed(3);
+      $('sceneA').style.transform = `scale(${1 - .03*seg(t,4.0,4.6)})`;
+      ['bot1','bot2','bot3'].forEach((id,i)=>{
+        const p = outQuint(seg(t, .55+i*.30, 1.15+i*.30));
+        $(id).style.opacity = p.toFixed(3);
+        $(id).style.transform = `translateY(${34*(1-p)}px)`;
+      });
+      const f = outCubic(seg(t,2.15,2.65));
+      $('a-foot').style.opacity = (.95*f).toFixed(3);
+      $('a-foot').style.transform = `translateY(${16*(1-f)}px)`;
+    }
+
+    // ---------- B : 4.4 → 9.2 ----------
+    {
+      const w = win(t,4.4,9.2,.45);
+      $('sceneB').style.opacity = w.toFixed(3);
+      $('sceneB').style.transform = `scale(${.985 + .015*seg(t,4.4,5.8)})`;
+      $('bp').style.opacity = outCubic(seg(t,4.85,5.35)).toFixed(3);
+
+      // nodos aparecen
+      const nodeT = [5.15, 5.55, 6.05, 6.05, 6.05, 7.05];
+      ['n0','n1','n2','n3','n4','n5'].forEach((id,i)=>{
+        const p = seg(t, nodeT[i], nodeT[i]+0.42);
+        $(id).style.opacity = p.toFixed(3);
+        $(id).setAttribute('transform', '');
+      });
+      // líneas se dibujan
+      const lineT = [5.35, 5.80, 5.80, 5.80, 6.55, 6.55, 6.55];
+      LINES.forEach((L,i)=>{
+        const p = inOutCubic(seg(t, lineT[i], lineT[i]+0.50));
+        L.el.style.strokeDashoffset = (L.len*(1-p)).toFixed(1);
+      });
+      // dots viajan hacia AUTOMÁTICO
+      DOTS.forEach((D,i)=>{
+        const p = seg(t, 7.15 + i*0.16, 8.35 + i*0.16);
+        const [x,y] = alongPath(D.path, inOutCubic(p));
+        D.el.setAttribute('cx', x); D.el.setAttribute('cy', y);
+        D.el.style.opacity = (p===0||p===1) ? 0 : Math.sin(p*Math.PI).toFixed(3);
+      });
+
+      const s = outCubic(seg(t,7.85,8.35));
+      $('b-sub').style.opacity = (.95*s).toFixed(3);
+      $('b-sub').style.transform = `translateY(${16*(1-s)}px)`;
+    }
+
+    // ---------- C : 9.0 → 12.9 ----------
+    {
+      const w = win(t,9.0,12.9,.42);
+      $('sceneC').style.opacity = w.toFixed(3);
+      const ti = outCubic(seg(t,9.25,9.75));
+      $('c-title').style.opacity = ti.toFixed(3);
+      $('c-title').style.transform = `translateY(${26*(1-ti)}px)`;
+      ['v1','v2','v3'].forEach((id,i)=>{
+        const p = seg(t, 9.60+i*.42, 10.20+i*.42);
+        const e = outBack(p);
+        $(id).style.opacity = clamp01(p*1.6).toFixed(3);
+        $(id).style.transform = `translateY(${36*(1-e)}px) scale(${.97+.03*e})`;
+      });
+    }
+
+    // ---------- D : 12.7 → 16.0 ----------
+    {
+      $('sceneD').style.opacity = Math.min(seg(t,12.7,13.15),1).toFixed(3);
+      $('sceneD').style.transform = `scale(${1 + .02*seg(t,13.1,16.0)})`;
+
+      const ti = outCubic(seg(t,12.90,13.50));
+      $('d-title').style.opacity = ti.toFixed(3);
+      $('d-title').style.transform = `translateY(${30*(1-ti)}px)`;
+
+      const bp = seg(t,13.45,14.05);
+      const beat = t>14.6 ? 1+.02*Math.sin((t-14.6)*1.5*Math.PI) : 1;
+      $('d-btnWrap').style.opacity = clamp01(bp*2.5).toFixed(3);
+      $('d-btnWrap').style.transform = `translate(-50%,0) scale(${(.6+.4*outBack(bp))*beat})`;
+      const sh = seg(t,14.20,15.00);
+      $('d-shine').style.transform = `translateX(${-300 + 700*inOutCubic(sh)}%)`;
+
+      const sp = outCubic(seg(t,13.85,14.35));
+      $('d-sub').style.opacity = (.95*sp).toFixed(3);
+      $('d-sub').style.transform = `translateY(${16*(1-sp)}px)`;
+
+      const lp = seg(t,14.05,14.70);
+      $('d-logo').style.opacity = clamp01(lp*2).toFixed(3);
+      $('d-logo').style.transform = `translateX(-50%) scale(${.8+.2*outCubic(lp)})`;
+
+      const pu = seg(t,14.75,15.60);
+      $('dPulse').style.opacity = pu===0?0:(.34*(1-pu)).toFixed(3);
+      $('dPulse').style.transform = `translate(-50%,-50%) scale(${.95+.45*outCubic(pu)})`;
+    }
+  };
+  window.seek(0);
+</script>
+</body>
+</html>

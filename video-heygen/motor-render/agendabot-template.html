@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face { font-family:'Space Grotesk'; font-weight:700; src:url(data:font/woff2;base64,__G700__) format('woff2'); }
+  @font-face { font-family:'Space Grotesk'; font-weight:500; src:url(data:font/woff2;base64,__G500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:500; src:url(data:font/woff2;base64,__M500__) format('woff2'); }
+  @font-face { font-family:'JetBrains Mono'; font-weight:400; src:url(data:font/woff2;base64,__M400__) format('woff2'); }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:1080px; height:1920px; background:#09090a; overflow:hidden; }
+  #stage {
+    position:relative; width:1080px; height:1920px;
+    background: radial-gradient(ellipse 130% 80% at 50% 46%, #131315 0%, #09090a 65%);
+    font-family:'Space Grotesk', sans-serif;
+  }
+  .particle { position:absolute; border-radius:50%; background:#ecd175; opacity:0; will-change:transform,opacity; }
+
+  /* ---------- chrome fijo ---------- */
+  #eyebrow {
+    position:absolute; top:7.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:500; font-size:24px;
+    letter-spacing:.30em; text-indent:.30em; color:#b89a4a;
+    opacity:0; will-change:opacity;
+  }
+  #eyebrow .dot { display:inline-block; width:10px; height:10px; border-radius:50%;
+    background:#3ecf8e; margin-right:16px; vertical-align:middle; box-shadow:0 0 14px rgba(62,207,142,.9); }
+  #urlbar {
+    position:absolute; bottom:6.2%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono', monospace; font-weight:400; font-size:26px;
+    letter-spacing:.05em; color:#5a5652;
+    opacity:0; will-change:opacity;
+  }
+
+  /* ---------- capas de escena ---------- */
+  .scene {
+    position:absolute; left:0; right:0; top:0; bottom:0;
+    opacity:0; will-change:opacity, transform;
+  }
+
+  /* ===== A: turno perdido ===== */
+  #a-title {
+    position:absolute; top:20%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:66px; line-height:1.18; letter-spacing:-1px; color:#f0ede8;
+  }
+  #a-title .em { color:#ecd175; }
+  .card {
+    position:absolute; left:50%; transform:translateX(-50%);
+    width:720px; border-radius:26px; background:#111113;
+    border:1px solid #252529; padding:44px 46px;
+  }
+  #a-card { top:38%; }
+  .cardTop { display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
+  .cardLbl { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; letter-spacing:.22em; color:#b89a4a; }
+  .cardTime { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:20px; color:#5a5652; letter-spacing:.1em; }
+  .cardName { font-weight:700; font-size:52px; color:#f0ede8; margin-bottom:10px; }
+  .cardSub { font-weight:500; font-size:30px; color:#9b9591; }
+  #a-strike {
+    position:absolute; left:50%; top:38%; margin-top:150px;
+    width:0; height:4px; background:#5a5652;
+    transform:translateX(-50%); border-radius:2px;
+  }
+  #a-stamp {
+    position:absolute; top:60.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:34px;
+    letter-spacing:.34em; text-indent:.34em; color:#5a5652;
+    opacity:0; transform:scale(1.25); will-change:opacity, transform;
+  }
+  .coin {
+    position:absolute; font-family:'Space Grotesk'; font-weight:700; font-size:44px;
+    color:#8a7538; opacity:0; will-change:transform,opacity;
+  }
+
+  /* ===== B: recordatorio ===== */
+  #b-label {
+    position:absolute; top:18.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:30px;
+    letter-spacing:.3em; text-indent:.3em; color:#ecd175;
+    opacity:0; transform:translateY(18px); will-change:opacity,transform;
+  }
+  #phone {
+    position:absolute; left:50%; top:25.5%;
+    width:520px; height:900px; margin-left:-260px;
+    border-radius:56px; background:#0d0d0f;
+    border:6px solid #2a2a2f;
+    box-shadow:0 0 90px rgba(236,209,117,.16), 0 30px 80px rgba(0,0,0,.6);
+    opacity:0; transform:translateY(60px) scale(.9); will-change:opacity,transform;
+    overflow:hidden;
+  }
+  #notch { position:absolute; top:18px; left:50%; transform:translateX(-50%);
+    width:150px; height:26px; border-radius:14px; background:#2a2a2f; }
+  .notif {
+    position:absolute; left:28px; right:28px;
+    background:#17171a; border:1px solid #2a2a30; border-radius:22px;
+    padding:26px 28px;
+    opacity:0; transform:translateY(-34px) scale(.96); will-change:opacity,transform;
+  }
+  #n1 { top:96px; }
+  #n2 { top:330px; }
+  #n3 { top:520px; border-color:#3a3a20; }
+  .nHead { display:flex; align-items:center; gap:14px; margin-bottom:14px; }
+  .nIco { width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center;
+    background:#1f1f24; border:1px solid #32323a; }
+  .nApp { font-family:'JetBrains Mono',monospace; font-weight:500; font-size:17px; letter-spacing:.16em; color:#b89a4a; }
+  .nNow { margin-left:auto; font-family:'JetBrains Mono',monospace; font-size:15px; color:#5a5652; }
+  .nBody { font-weight:500; font-size:23px; line-height:1.42; color:#d8d3ce; }
+  .nBody b { color:#ecd175; font-weight:700; }
+  #calBtn {
+    margin-top:20px; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:17px; letter-spacing:.1em;
+    color:#111113; background:#ecd175; border-radius:12px; padding:14px 0;
+  }
+  #checkWrap {
+    position:absolute; left:50%; top:760px; transform:translateX(-50%) scale(0);
+    width:96px; height:96px; border-radius:50%;
+    background:rgba(62,207,142,.12); border:2px solid #3ecf8e;
+    display:flex; align-items:center; justify-content:center;
+    will-change:transform;
+  }
+  #checkPath { stroke-dasharray:60; stroke-dashoffset:60; }
+
+  /* ===== C: reagenda ===== */
+  #c-title {
+    position:absolute; top:24%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:64px; letter-spacing:-1px; color:#f0ede8;
+  }
+  #c-title .em { color:#ecd175; }
+  #c-row {
+    position:absolute; top:41%; left:50%; transform:translateX(-50%);
+    display:flex; align-items:center; gap:44px;
+  }
+  .chip {
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:52px;
+    padding:34px 46px; border-radius:22px;
+    border:1px solid #252529; background:#111113; color:#5a5652;
+    position:relative;
+  }
+  .chip.on { color:#111113; background:linear-gradient(180deg,#f5e2a0,#ecd175);
+    border-color:#ecd175; box-shadow:0 0 60px rgba(236,209,117,.4); }
+  #chipStrike { position:absolute; left:14%; top:50%; height:4px; width:0; background:#5a5652; border-radius:2px; }
+  #c-arrow { opacity:0; transform:translateX(-24px); will-change:opacity,transform; }
+  #c-sub {
+    position:absolute; top:55%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:26px;
+    letter-spacing:.2em; text-indent:.2em; color:#3ecf8e;
+    opacity:0; will-change:opacity;
+  }
+
+  /* ===== D: stat ===== */
+  #d-num {
+    position:absolute; top:31%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:260px; letter-spacing:-8px; line-height:1;
+    color:#ecd175;
+    text-shadow:0 0 120px rgba(236,209,117,.45);
+    opacity:0; transform:scale(.72); will-change:opacity,transform;
+  }
+  #d-num .pct { font-size:130px; letter-spacing:0; }
+  #d-lbl {
+    position:absolute; top:49.5%; left:0; right:0; text-align:center;
+    font-family:'JetBrains Mono',monospace; font-weight:500; font-size:32px;
+    letter-spacing:.28em; text-indent:.28em; color:#f0ede8;
+    opacity:0; transform:translateY(20px); will-change:opacity,transform;
+  }
+  #d-sub {
+    position:absolute; top:55.5%; left:0; right:0; text-align:center;
+    font-weight:500; font-size:34px; color:#9b9591;
+    opacity:0; transform:translateY(16px); will-change:opacity,transform;
+  }
+  #d-mark {
+    position:absolute; left:50%; top:65.5%; transform:translateX(-50%) scale(.8);
+    width:190px; height:190px; opacity:0; will-change:opacity,transform;
+    filter:drop-shadow(0 0 50px rgba(236,209,117,.35));
+  }
+  #d-name {
+    position:absolute; top:79%; left:0; right:0; text-align:center;
+    font-weight:700; font-size:56px; color:#f0ede8; letter-spacing:-.5px;
+    opacity:0; transform:translateY(18px); will-change:opacity,transform;
+  }
+  #d-name .em { color:#ecd175; }
+  .dPulse {
+    position:absolute; left:50%; top:65.5%; margin-top:95px;
+    width:190px; height:190px; border:3px solid #3ecf8e; border-radius:50%;
+    transform:translate(-50%,-50%) scale(.95); opacity:0; will-change:transform,opacity;
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="particles"></div>
+  <div id="eyebrow"><span class="dot"></span>AGENDABOT &centerdot; DEMO GRATUITA</div>
+
+  <!-- ===== A ===== -->
+  <div class="scene" id="sceneA">
+    <div id="a-title">&iquest;Cu&aacute;nta plata perd&eacute;s<br>cuando <span class="em">no aparecen</span>?</div>
+    <div class="card" id="a-card">
+      <div class="cardTop"><span class="cardLbl">TURNO</span><span class="cardTime">HOY &centerdot; 10:00</span></div>
+      <div class="cardName">Mar&iacute;a Garc&iacute;a</div>
+      <div class="cardSub">Consulta &centerdot; 45 min</div>
+    </div>
+    <div id="a-strike"></div>
+    <div id="a-stamp">NO&ndash;SHOW</div>
+    <div id="coins"></div>
+  </div>
+
+  <!-- ===== B ===== -->
+  <div class="scene" id="sceneB">
+    <div id="b-label">48 HS ANTES DEL TURNO</div>
+    <div id="phone">
+      <div id="notch"></div>
+      <div class="notif" id="n1">
+        <div class="nHead">
+          <div class="nIco">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2">
+              <path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 8.5 8.5 0 0 1-3.9-.9L3 20.5l1.6-4.8A8.4 8.4 0 0 1 3.6 11 8.5 8.5 0 0 1 12 3a8.4 8.4 0 0 1 9 8.5z"/>
+            </svg>
+          </div>
+          <span class="nApp">WHATSAPP</span><span class="nNow">ahora</span>
+        </div>
+        <div class="nBody">Hola Mar&iacute;a, te recordamos tu turno del <b>jueves 10:00</b>. &iquest;Confirm&aacute;s?</div>
+        <div id="calBtn">+ AGREGAR A GOOGLE CALENDAR</div>
+      </div>
+      <div class="notif" id="n2">
+        <div class="nHead">
+          <div class="nIco">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ecd175" stroke-width="2">
+              <rect x="2.5" y="4.5" width="19" height="15" rx="3"/><path d="M3 6l9 6.5L21 6"/>
+            </svg>
+          </div>
+          <span class="nApp">EMAIL</span><span class="nNow">ahora</span>
+        </div>
+        <div class="nBody">Recordatorio de turno &centerdot; <b>Consulta 45 min</b></div>
+      </div>
+      <div class="notif" id="n3">
+        <div class="nHead">
+          <div class="nIco">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2">
+              <rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/>
+            </svg>
+          </div>
+          <span class="nApp" style="color:#3ecf8e">CALENDAR</span><span class="nNow">ahora</span>
+        </div>
+        <div class="nBody">Turno agendado &centerdot; <b style="color:#3ecf8e">confirmado</b></div>
+      </div>
+      <div id="checkWrap">
+        <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#3ecf8e" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path id="checkPath" d="M4 12.5l5 5L20 6.5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== C ===== -->
+  <div class="scene" id="sceneC">
+    <div id="c-title">Si cancela, <span class="em">reagenda solo</span>.</div>
+    <div id="c-row">
+      <div class="chip" id="chipOld">10:00<div id="chipStrike"></div></div>
+      <div id="c-arrow">
+        <svg width="78" height="40" viewBox="0 0 78 40" fill="none" stroke="#ecd175" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 20h64M52 6l16 14-16 14"/>
+        </svg>
+      </div>
+      <div class="chip on" id="chipNew">15:30</div>
+    </div>
+    <div id="c-sub">&centerdot; SIN LLAMADAS &centerdot; SIN PLANILLAS &centerdot;</div>
+  </div>
+
+  <!-- ===== D ===== -->
+  <div class="scene" id="sceneD">
+    <div id="d-num">&minus;<span id="dVal">0</span><span class="pct">%</span></div>
+    <div id="d-lbl">MENOS NO&ndash;SHOWS</div>
+    <div id="d-sub">Prob&aacute; la demo real. Gratis, en 2 minutos.</div>
+    <div class="dPulse" id="dPulse"></div>
+    <div id="d-mark">
+      <svg viewBox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="120" cy="120" r="114" fill="none" stroke="#ecd175" stroke-width="12"/>
+        <circle cx="120" cy="120" r="108" fill="#141416"/>
+        <rect x="70" y="88" width="9" height="64" rx="4.5" fill="#ecd175"/>
+        <rect x="84" y="88" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <rect x="84" y="143" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <rect x="161" y="88" width="9" height="64" rx="4.5" fill="#ecd175"/>
+        <rect x="132" y="88" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <rect x="132" y="143" width="24" height="9" rx="4.5" fill="#ecd175"/>
+        <circle cx="120" cy="120" r="17" fill="#3ecf8e"/>
+      </svg>
+    </div>
+    <div id="d-name">Agenda<span class="em">Bot</span></div>
+  </div>
+
+  <div id="urlbar">agendabot.oficinadejhonson.com</div>
+</div>
+
+<script>
+  const outCubic = x => 1 - Math.pow(1 - x, 3);
+  const outQuint = x => 1 - Math.pow(1 - x, 5);
+  const inOutCubic = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x+2,3)/2;
+  const outBack = x => { const c1=1.5, c3=c1+1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const seg = (t,a,b) => clamp01((t-a)/(b-a));
+  const $ = id => document.getElementById(id);
+  // ventana de escena con crossfade
+  const win = (t,a,b,f=0.35) => Math.min(seg(t,a,a+f), 1-seg(t,b-f,b));
+
+  function mulberry32(a){return function(){let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296;};}
+  const rng = mulberry32(11);
+
+  // polvo ambiente
+  const amb = [];
+  for (let i=0;i<18;i++){
+    const el=document.createElement('div'); el.className='particle';
+    const s=3+rng()*5; el.style.width=s+'px'; el.style.height=s+'px';
+    if(rng()>.6) el.style.filter='blur(2px)';
+    $('particles').appendChild(el);
+    amb.push({el,x:60+rng()*960,y:500+rng()*1400,sp:20+rng()*40,sw:14+rng()*28,ph:rng()*6.28,op:.08+rng()*.18});
+  }
+  // monedas que caen (escena A)
+  const coins=[];
+  for(let i=0;i<7;i++){
+    const el=document.createElement('div'); el.className='coin'; el.textContent='$';
+    $('coins').appendChild(el);
+    coins.push({el,x:300+rng()*480,y:820+rng()*90,d:rng()*.5,sp:230+rng()*180,rot:(rng()-.5)*70});
+  }
+
+  const D = 14.0; // duración total
+
+  window.seek = function(t){
+    // chrome
+    $('eyebrow').style.opacity = (0.95 * Math.min(seg(t,0.15,0.75), 1-seg(t,13.4,14.0))).toFixed(3);
+    $('urlbar').style.opacity  = (0.9  * Math.min(seg(t,0.35,1.0),  1-seg(t,13.4,14.0))).toFixed(3);
+
+    // polvo
+    amb.forEach(p=>{
+      const y=p.y-p.sp*t, x=p.x+Math.sin(t*.8+p.ph)*p.sw;
+      const env=seg(t,.2,1.1)*(1-seg(t,13.2,14.0));
+      p.el.style.transform=`translate(${x}px,${y}px)`;
+      p.el.style.opacity=(p.op*env*(.7+.3*Math.sin(t*2+p.ph*3))).toFixed(3);
+    });
+
+    // ---------- ESCENA A : 0 → 4.0 ----------
+    {
+      const w = win(t, 0.0, 4.0, 0.45);
+      const A = $('sceneA');
+      A.style.opacity = w.toFixed(3);
+      A.style.transform = `scale(${1 - 0.03*seg(t,3.4,4.0)})`;
+
+      // card entra
+      const ce = outQuint(seg(t,0.35,1.05));
+      $('a-card').style.opacity = ce.toFixed(3);
+      $('a-card').style.transform = `translateX(-50%) translateY(${34*(1-ce)}px)`;
+      // se apaga
+      const dim = seg(t,1.85,2.45);
+      $('a-card').style.filter = `grayscale(${dim}) brightness(${1-0.42*dim})`;
+      // tachado
+      $('a-strike').style.width = `${640*inOutCubic(seg(t,1.95,2.45))}px`;
+      // sello
+      const st = seg(t,2.35,2.75);
+      $('a-stamp').style.opacity = st.toFixed(3);
+      $('a-stamp').style.transform = `scale(${1.25 - .25*outBack(st)})`;
+      // monedas caen
+      coins.forEach(c=>{
+        const p = seg(t, 2.10+c.d, 3.40+c.d);
+        c.el.style.opacity = p===0||p===1 ? 0 : (0.85*Math.sin(p*Math.PI)).toFixed(3);
+        c.el.style.transform = `translate(${c.x}px, ${c.y + p*c.sp}px) rotate(${p*c.rot}deg)`;
+      });
+    }
+
+    // ---------- ESCENA B : 3.8 → 8.6 ----------
+    {
+      const w = win(t, 3.8, 8.6, 0.45);
+      const B = $('sceneB');
+      B.style.opacity = w.toFixed(3);
+      B.style.transform = `scale(${0.985 + 0.015*seg(t,3.8,5.2)})`;
+
+      const lb = outCubic(seg(t,4.05,4.55));
+      $('b-label').style.opacity = lb.toFixed(3);
+      $('b-label').style.transform = `translateY(${18*(1-lb)}px)`;
+
+      const ph = seg(t,4.15,4.95);
+      $('phone').style.opacity = clamp01(ph*1.6).toFixed(3);
+      $('phone').style.transform = `translateY(${60*(1-outQuint(ph))}px) scale(${.9+.1*outQuint(ph)})`;
+
+      [['n1',4.85],['n2',5.75],['n3',6.55]].forEach(([id,ts])=>{
+        const p = seg(t, ts, ts+0.45);
+        $(id).style.opacity = p.toFixed(3);
+        $(id).style.transform = `translateY(${-34*(1-outBack(p))}px) scale(${.96+.04*outBack(p)})`;
+      });
+
+      const ck = seg(t,7.05,7.55);
+      $('checkWrap').style.transform = `translateX(-50%) scale(${ck===0?0:outBack(ck)})`;
+      $('checkPath').style.strokeDashoffset = `${60*(1-outCubic(seg(t,7.30,7.85)))}`;
+    }
+
+    // ---------- ESCENA C : 8.4 → 11.0 ----------
+    {
+      const w = win(t, 8.4, 11.0, 0.42);
+      const C = $('sceneC');
+      C.style.opacity = w.toFixed(3);
+
+      const ti = outCubic(seg(t,8.65,9.15));
+      $('c-title').style.opacity = ti.toFixed(3);
+      $('c-title').style.transform = `translateY(${26*(1-ti)}px)`;
+
+      const ro = outQuint(seg(t,8.95,9.55));
+      $('c-row').style.opacity = ro.toFixed(3);
+      $('c-row').style.transform = `translateX(-50%) translateY(${24*(1-ro)}px)`;
+
+      $('chipStrike').style.width = `${72*inOutCubic(seg(t,9.55,9.95))}%`;
+
+      const ar = outBack(seg(t,9.75,10.15));
+      $('c-arrow').style.opacity = clamp01(seg(t,9.75,10.05)).toFixed(3);
+      $('c-arrow').style.transform = `translateX(${-24*(1-ar)}px)`;
+
+      const nb = seg(t,10.0,10.4);
+      const beat = t>10.4 ? 1+0.03*Math.sin((t-10.4)*3.4*Math.PI) : 1;
+      $('chipNew').style.transform = `scale(${(0.92+0.08*outBack(nb))*beat})`;
+
+      $('c-sub').style.opacity = (0.9*outCubic(seg(t,10.25,10.65))).toFixed(3);
+    }
+
+    // ---------- ESCENA D : 10.8 → 14.0 ----------
+    {
+      const w = Math.min(seg(t,10.8,11.25), 1);
+      const Dl = $('sceneD');
+      Dl.style.opacity = w.toFixed(3);
+      Dl.style.transform = `scale(${1 + 0.02*seg(t,11.2,14.0)})`;
+
+      const np = seg(t,11.0,11.7);
+      $('d-num').style.opacity = clamp01(np*2).toFixed(3);
+      $('d-num').style.transform = `scale(${.72+.28*outBack(np)})`;
+      // contador
+      const cnt = Math.round(40 * outQuint(seg(t,11.15,12.35)));
+      $('dVal').textContent = cnt;
+
+      const lp = outCubic(seg(t,11.85,12.35));
+      $('d-lbl').style.opacity = lp.toFixed(3);
+      $('d-lbl').style.transform = `translateY(${20*(1-lp)}px)`;
+
+      const sp = outCubic(seg(t,12.15,12.65));
+      $('d-sub').style.opacity = (0.95*sp).toFixed(3);
+      $('d-sub').style.transform = `translateY(${16*(1-sp)}px)`;
+
+      const mp = seg(t,12.35,12.95);
+      $('d-mark').style.opacity = clamp01(mp*2).toFixed(3);
+      $('d-mark').style.transform = `translateX(-50%) scale(${.8+.2*outBack(mp)})`;
+
+      const pu = seg(t,12.85,13.75);
+      $('dPulse').style.opacity = pu===0?0:(0.38*(1-pu)).toFixed(3);
+      $('dPulse').style.transform = `translate(-50%,-50%) scale(${.95+.55*outCubic(pu)})`;
+
+      const nm = outCubic(seg(t,12.75,13.25));
+      $('d-name').style.opacity = nm.toFixed(3);
+      $('d-name').style.transform = `translateY(${18*(1-nm)}px)`;
+    }
+  };
+  window.seek(0);
+</script>
+</body>
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  @font-face {
+    font-family: 'JetBrains Mono';
+    font-weight: 500;
+    src: url(data:font/woff2;base64,__JETMONO500__) format('woff2');
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; background: #09090a; overflow: hidden; }
+  #stage {
+    position: relative; width: 1080px; height: 1920px;
+    background: radial-gradient(ellipse 120% 90% at 50% 43%, #111113 0%, #09090a 62%);
+    transform-origin: 50% 44%;
+    will-change: transform;
+  }
+  #glow {
+    position: absolute; left: 50%; top: 44%;
+    width: 1500px; height: 1500px;
+    transform: translate(-50%,-50%) scale(0.3);
+    background: radial-gradient(circle,
+      rgba(236,209,117,0.30) 0%,
+      rgba(236,160,117,0.13) 30%,
+      rgba(236,120,150,0.05) 52%,
+      rgba(236,209,117,0) 70%);
+    opacity: 0; will-change: transform, opacity;
+  }
+  /* destello al aparecer el logo */
+  #bloom {
+    position: absolute; left: 50%; top: 44%;
+    width: 1300px; height: 1300px;
+    transform: translate(-50%,-50%);
+    background: radial-gradient(circle,
+      rgba(255,248,225,0.85) 0%,
+      rgba(236,209,117,0.35) 28%,
+      rgba(236,209,117,0) 60%);
+    opacity: 0; will-change: opacity, transform;
+  }
+  /* arco de anticipación */
+  #spinner {
+    position: absolute; left: 50%; top: 44%;
+    width: 760px; height: 760px;
+    transform: translate(-50%,-50%);
+    opacity: 0; will-change: transform, opacity;
+  }
+  #spinner svg { width: 100%; height: 100%; overflow: visible; }
+  #arc {
+    fill: none; stroke: url(#arcGrad); stroke-width: 6; stroke-linecap: round;
+    stroke-dasharray: 640 1500;
+    transform-origin: 380px 380px;
+  }
+  #logoWrap {
+    position: absolute; left: 50%; top: 44%;
+    width: 680px; height: 680px;
+    transform: translate(-50%,-50%) scale(0.5);
+    opacity: 0;
+    filter: drop-shadow(0 0 110px rgba(236,209,117,0.35));
+    will-change: transform, opacity;
+  }
+  #logoCanvas { width: 100%; height: 100%; display: block; }
+  /* barrido especular sobre el logo */
+  #shineMask {
+    position: absolute; left: 50%; top: 44%;
+    width: 660px; height: 660px;
+    transform: translate(-50%,-50%);
+    border-radius: 50%; overflow: hidden;
+    opacity: 0; will-change: opacity;
+    pointer-events: none;
+  }
+  #shine {
+    position: absolute; top: -20%; left: 0;
+    width: 34%; height: 140%;
+    background: linear-gradient(105deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.28) 45%,
+      rgba(255,255,255,0.42) 50%,
+      rgba(255,255,255,0.28) 55%,
+      rgba(255,255,255,0) 100%);
+    transform: translateX(-320%) rotate(0deg);
+    will-change: transform;
+  }
+  .pulse {
+    position: absolute; left: 50%; top: 44%;
+    width: 680px; height: 680px;
+    border: 4px solid #3ecf8e; border-radius: 50%;
+    transform: translate(-50%,-50%) scale(0.95);
+    opacity: 0; will-change: transform, opacity;
+  }
+  #tagline {
+    position: absolute; left: 0; right: 0; top: 63.2%;
+    text-align: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 500; font-size: 23px;
+    letter-spacing: 0.09em; text-indent: 0.09em;
+    color: #d9c07a; white-space: nowrap;
+  }
+  #tagline .w { display: inline-block; opacity: 0; transform: translateY(22px); will-change: opacity, transform; }
+  #tagline .dot { color: #3ecf8e; display: inline-block; opacity: 0; }
+  .particle {
+    position: absolute; border-radius: 50%;
+    background: #ecd175; opacity: 0; will-change: transform, opacity;
+  }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="glow"></div>
+  <div id="particles"></div>
+  <div id="spinner">
+    <svg viewBox="0 0 760 760">
+      <defs>
+        <linearGradient id="arcGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#f43f8e"/>
+          <stop offset="50%" stop-color="#f59e0b"/>
+          <stop offset="100%" stop-color="#a855f7"/>
+        </linearGradient>
+      </defs>
+      <circle id="arc" cx="380" cy="380" r="340"/>
+    </svg>
+  </div>
+  <div class="pulse" id="pulse1"></div>
+  <div class="pulse" id="pulse2"></div>
+  <div id="bloom"></div>
+  <div id="logoWrap"><canvas id="logoCanvas" width="1400" height="1400"></canvas></div>
+  <div id="shineMask"><div id="shine"></div></div>
+  <div id="tagline">
+    <span class="w">SISTEMAS</span> <span class="dot">&centerdot;</span>
+    <span class="w">CONSULTOR&Iacute;A</span> <span class="dot">&centerdot;</span>
+    <span class="w">AG&Eacute;NTICA</span> <span class="dot">&centerdot;</span>
+    <span class="w">AUTOMATIZACIONES</span>
+  </div>
+</div>
+<script>
+  const outExpo  = x => x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+  const outCubic = x => 1 - Math.pow(1 - x, 3);
+  const inOutCubic = x => x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2;
+  const outBack  = x => { const c1 = 1.35, c3 = c1 + 1; return 1 + c3*Math.pow(x-1,3) + c1*Math.pow(x-1,2); };
+  const clamp01 = x => Math.max(0, Math.min(1, x));
+  const seg = (t, a, b) => clamp01((t - a) / (b - a));
+  const $ = id => document.getElementById(id);
+
+  // RNG determinístico
+  function mulberry32(a) {
+    return function() {
+      let t = a += 0x6D2B79F5;
+      t = Math.imul(t ^ t >>> 15, t | 1);
+      t ^= t + Math.imul(t ^ t >>> 7, t | 61);
+      return ((t ^ t >>> 14) >>> 0) / 4294967296;
+    };
+  }
+
+  // ---- partículas ambiente (polvo dorado) ----
+  const rng = mulberry32(42);
+  const ambient = [];
+  const pContainer = $('particles');
+  for (let i = 0; i < 22; i++) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const size = 3 + rng() * 6;
+    el.style.width = size + 'px'; el.style.height = size + 'px';
+    pContainer.appendChild(el);
+    ambient.push({
+      el, size,
+      x: 60 + rng() * 960,
+      y: 300 + rng() * 1300,
+      speed: 26 + rng() * 50,          // px/s hacia arriba
+      sway: 18 + rng() * 34,
+      phase: rng() * Math.PI * 2,
+      op: 0.10 + rng() * 0.25,
+      blur: rng() > 0.6,
+    });
+  }
+  ambient.forEach(p => { if (p.blur) p.el.style.filter = 'blur(2px)'; });
+
+  // ---- partículas convergentes (se juntan al centro al inicio) ----
+  const conv = [];
+  for (let i = 0; i < 14; i++) {
+    const el = document.createElement('div');
+    el.className = 'particle';
+    const size = 4 + rng() * 5;
+    el.style.width = size + 'px'; el.style.height = size + 'px';
+    pContainer.appendChild(el);
+    conv.push({
+      el,
+      ang: rng() * Math.PI * 2,
+      r0: 620 + rng() * 320,
+      delay: rng() * 0.30,
+      op: 0.5 + rng() * 0.5,
+    });
+  }
+  const CX = 540, CY = 1920 * 0.44;
+
+  // ---- chroma-key del fondo blanco + auto-centrado ----
+  window.logoReady = (async function() {
+    const img = new Image();
+    img.src = 'data:image/jpeg;base64,__LOGO__';
+    await img.decode();
+    const W = img.naturalWidth, H = img.naturalHeight;
+    const c = document.createElement('canvas');
+    c.width = W; c.height = H;
+    const ctx = c.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    const d = ctx.getImageData(0, 0, W, H);
+    const px = d.data;
+    const isBg = (i) => {
+      const r = px[i], g = px[i+1], b = px[i+2];
+      const mx = Math.max(r,g,b), mn = Math.min(r,g,b);
+      return mx > 215 && (mx - mn) < 30; // blanco/gris claro, baja saturación
+    };
+    // flood fill desde los bordes
+    const visited = new Uint8Array(W * H);
+    const stack = [];
+    for (let x = 0; x < W; x++) { stack.push(x, 0, x, H-1); }
+    for (let y = 0; y < H; y++) { stack.push(0, y, W-1, y); }
+    while (stack.length) {
+      const y = stack.pop(), x = stack.pop();
+      if (x < 0 || y < 0 || x >= W || y >= H) continue;
+      const idx = y * W + x;
+      if (visited[idx]) continue;
+      visited[idx] = 1;
+      const i4 = idx * 4;
+      if (!isBg(i4)) continue;
+      px[i4 + 3] = 0;
+      stack.push(x+1, y, x-1, y, x, y+1, x, y-1);
+    }
+    ctx.putImageData(d, 0, 0);
+    // bounding box de píxeles visibles → centrar
+    let minX = W, minY = H, maxX = 0, maxY = 0;
+    for (let y = 0; y < H; y += 2) {
+      for (let x = 0; x < W; x += 2) {
+        if (px[(y * W + x) * 4 + 3] > 10) {
+          if (x < minX) minX = x; if (x > maxX) maxX = x;
+          if (y < minY) minY = y; if (y > maxY) maxY = y;
+        }
+      }
+    }
+    const bw = maxX - minX + 1, bh = maxY - minY + 1;
+    const side = Math.max(bw, bh);
+    const out = $('logoCanvas');
+    const octx = out.getContext('2d');
+    out.width = 1400; out.height = 1400;
+    const scale = 1360 / side;
+    octx.clearRect(0, 0, 1400, 1400);
+    octx.drawImage(c, minX, minY, bw, bh,
+      (1400 - bw * scale) / 2, (1400 - bh * scale) / 2, bw * scale, bh * scale);
+    return true;
+  })();
+
+  // t en segundos [0, 6] — determinístico
+  window.seek = function(t) {
+    // push-in cinematográfico global
+    $('stage') .style.transform = `scale(${1 + 0.045 * (t / 6)})`;
+
+    // GLOW: sube con el pop del logo, respira después
+    {
+      const g = outCubic(seg(t, 0.75, 1.60));
+      const breathe = 1 + (t > 1.6 ? 0.030 * Math.sin((t - 1.6) * 1.15 * Math.PI) : 0);
+      $('glow').style.opacity = (0.66 * g).toFixed(4);
+      $('glow').style.transform = `translate(-50%,-50%) scale(${(0.34 + 0.82 * g) * breathe})`;
+    }
+    // SPINNER: arco gira y se desvanece cuando aparece el logo
+    {
+      const vis = seg(t, 0.05, 0.35) * (1 - seg(t, 0.85, 1.15));
+      const rot = -90 + 520 * inOutCubic(seg(t, 0.0, 1.15));
+      $('spinner').style.opacity = (0.85 * vis).toFixed(4);
+      $('arc').style.transform = `rotate(${rot}deg)`;
+      const dash = 120 + 780 * inOutCubic(seg(t, 0.0, 1.1));
+      $('arc').style.strokeDasharray = `${dash} 2200`;
+    }
+    // CONVERGENTES: vuelan al centro 0.1→1.0
+    conv.forEach(p => {
+      const pr = seg(t, 0.10 + p.delay, 0.95 + p.delay * 0.5);
+      const e = inOutCubic(pr);
+      const r = p.r0 * (1 - e) + 60 * e;
+      const x = CX + Math.cos(p.ang) * r;
+      const y = CY + Math.sin(p.ang) * r * 0.98;
+      p.el.style.transform = `translate(${x}px, ${y}px)`;
+      const fade = pr === 0 ? 0 : Math.sin(Math.min(pr, 1) * Math.PI);
+      p.el.style.opacity = (p.op * fade).toFixed(3);
+    });
+    // AMBIENTE: polvo flotando todo el video
+    ambient.forEach(p => {
+      const y = p.y - p.speed * t;
+      const x = p.x + Math.sin(t * 0.9 + p.phase) * p.sway;
+      const env = seg(t, 0.3, 1.2) * (1 - seg(t, 5.5, 6.0));
+      p.el.style.transform = `translate(${x}px, ${y}px)`;
+      p.el.style.opacity = (p.op * env * (0.75 + 0.25 * Math.sin(t * 2.1 + p.phase * 3))).toFixed(3);
+    });
+    // BLOOM: destello en el pop
+    {
+      const p = seg(t, 0.90, 1.65);
+      const o = p === 0 ? 0 : Math.sin(Math.min(p, 1) * Math.PI);
+      $('bloom').style.opacity = (0.55 * o).toFixed(4);
+      $('bloom').style.transform = `translate(-50%,-50%) scale(${0.7 + 0.7 * outCubic(p)})`;
+    }
+    // LOGO: pop con overshoot 0.9→1.55, micro-drift después
+    {
+      const p = seg(t, 0.90, 1.55);
+      const drift = t > 1.55 ? 0.010 * ((t - 1.55) / 4.45) : 0;
+      const s = 0.5 + 0.5 * outBack(p) + drift;
+      $('logoWrap').style.opacity = clamp01(p * 3).toFixed(4);
+      $('logoWrap').style.transform = `translate(-50%,-50%) scale(${s})`;
+    }
+    // SHINE: barrido especular 2.0→2.85
+    {
+      const p = seg(t, 2.00, 2.85);
+      $('shineMask').style.opacity = p === 0 || p === 1 ? 0 : 1;
+      $('shine').style.transform = `translateX(${(-320 + 740 * inOutCubic(p))}%) rotate(0deg)`;
+    }
+    // PULSOS verdes: dos ondas
+    {
+      const p1 = seg(t, 2.10, 2.90);
+      $('pulse1').style.opacity = p1 === 0 ? 0 : (0.42 * (1 - p1)).toFixed(4);
+      $('pulse1').style.transform = `translate(-50%,-50%) scale(${0.97 + 0.6 * outCubic(p1)})`;
+      const p2 = seg(t, 2.55, 3.40);
+      $('pulse2').style.opacity = p2 === 0 ? 0 : (0.30 * (1 - p2)).toFixed(4);
+      $('pulse2').style.transform = `translate(-50%,-50%) scale(${0.97 + 0.75 * outCubic(p2)})`;
+    }
+    // TAGLINE: palabra por palabra 2.6→
+    {
+      const words = document.querySelectorAll('#tagline .w');
+      const dots = document.querySelectorAll('#tagline .dot');
+      words.forEach((w, i) => {
+        const p = outCubic(seg(t, 2.60 + i * 0.24, 3.05 + i * 0.24));
+        w.style.opacity = (0.92 * p).toFixed(4);
+        w.style.transform = `translateY(${22 * (1 - p)}px)`;
+      });
+      dots.forEach((d, i) => {
+        const p = outCubic(seg(t, 2.84 + i * 0.24, 3.20 + i * 0.24));
+        d.style.opacity = p.toFixed(4);
+      });
+    }
+  };
+  window.seek(0);
+</script>
+</body>
+</html>
