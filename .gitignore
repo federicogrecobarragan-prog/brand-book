@@ -1,3 +1,4 @@
 *.env
 credentials/
 secrets/
+graphify-out/
